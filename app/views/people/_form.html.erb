@@ -20,6 +20,56 @@
   </div>
 
   <div>
+    <%= form.label :gender %>
+    <%= form.text_field :gender %>
+    <% person.errors.full_messages_for(:gender).each do |message| %>
+      <div>
+        <%= message %>
+      </div>
+    <% end %>
+  </div>
+
+  <div>
+    <%= form.label :phone_number %>
+    <%= form.text_field :phone_number %>
+    <% person.errors.full_messages_for(:phone_number).each do |message| %>
+      <div>
+        <%= message %>
+      </div>
+    <% end %>
+  </div>
+
+  <div>
+    <%= form.label :date_of_birth %>
+    <%= form.text_field :date_of_birth %>
+    <% person.errors.full_messages_for(:date_of_birth).each do |message| %>
+      <div>
+        <%= message %>
+      </div>
+    <% end %>
+  </div>
+
+  <div>
+    <%= form.label :date_of_death %>
+    <%= form.text_field :date_of_death %>
+    <% person.errors.full_messages_for(:date_of_death).each do |message| %>
+      <div>
+        <%= message %>
+      </div>
+    <% end %>
+  </div>
+
+  <div>
+    <%= form.label :maiden_name %>
+    <%= form.text_field :maiden_name %>
+    <% person.errors.full_messages_for(:maiden_name).each do |message| %>
+      <div>
+        <%= message %>
+      </div>
+    <% end %>
+  </div>
+
+  <div>
     <%= form.submit %>
   </div>
 <% end %>

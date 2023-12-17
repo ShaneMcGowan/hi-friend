@@ -8,7 +8,7 @@
   <%= relationship.notes %>
 </p>
 
-<li><%= link_to "Destroy", person_relationship_path(@person, relationship), data: {
+<li><%= link_to "Destroy", person_relationship_path(relationship.person, relationship), data: {
     turbo_method: :delete,
     turbo_confirm: "Are you sure?"
 } %></li>
