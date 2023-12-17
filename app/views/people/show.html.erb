@@ -1,0 +1,15 @@
+<h1><%= @person.full_name %></h1>
+
+<ul>
+  <li><%= link_to "Edit", edit_person_path(@person) %></li>
+  <li><%= link_to "Destroy", person_path(@person), data: {
+    turbo_method: :delete,
+    turbo_confirm: "Are you sure?"
+  } %></li>
+</ul>
+
+<h2>Relationships</h2>
+<%= render @person.relationships %>
+
+<h2>Add relationship</h2>
+<%= render 'relationships/form' %>

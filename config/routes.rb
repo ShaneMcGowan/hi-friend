@@ -9,6 +9,8 @@ Rails.application.routes.draw do
   # root "posts#index"
 
   root "people#index"
-  
-  get "/people", to: "people#index"
+
+  resources :people do
+    resources :relationships 
+  end
 end

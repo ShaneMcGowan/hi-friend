@@ -1,0 +1,14 @@
+<p>
+  <strong>Type: </strong>
+  <%= relationship.relationship_type %>
+</p>
+
+<p>
+  <strong>Notes: </strong>
+  <%= relationship.notes %>
+</p>
+
+<li><%= link_to "Destroy", person_relationship_path(@person, relationship), data: {
+    turbo_method: :delete,
+    turbo_confirm: "Are you sure?"
+} %></li>

@@ -1,0 +1,15 @@
+<%= form_with model: [@person, @person.relationships.build ] do |form| %>
+  <p>
+    <%= form.label :relationship_type %>
+    <%= form.select :relationship_type, ['Parent', 'Child'], selected: 'Parent' %>
+  </p>
+
+  <p>
+    <%= form.label :notes %>
+    <%= form.text_field :notes %>
+  </p>
+
+  <p>
+    <%= form.submit %>
+  </p>
+<% end %>
