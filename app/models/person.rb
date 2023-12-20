@@ -1,5 +1,7 @@
 class Person < ApplicationRecord
-  has_many :relationships
+  # has_many :relationships, dependent: :destroy
+  has_many :relationships, foreign_key: 'is_id', class_name: 'Relationship', dependent: :destroy
+
   
   validates :first_name, presence: true
   validates :last_name, presence: true, length: { maximum: 50 } # 50 is arbitrary

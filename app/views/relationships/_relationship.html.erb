@@ -1,6 +1,10 @@
 <p>
-  <strong>Type: </strong>
+  
+  <%= relationship.is.full_name %>
+  is
   <%= relationship.relationship_type %>
+  of
+  <%= relationship.of.full_name %>
 </p>
 
 <p>
@@ -8,7 +12,7 @@
   <%= relationship.notes %>
 </p>
 
-<li><%= link_to "Destroy", person_relationship_path(relationship.person, relationship), data: {
+<li><%= link_to "Destroy", person_relationship_path(relationship.is, relationship), data: {
     turbo_method: :delete,
     turbo_confirm: "Are you sure?"
 } %></li>

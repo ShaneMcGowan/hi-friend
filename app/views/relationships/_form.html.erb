@@ -1,7 +1,7 @@
 <%= form_with model: [@person, @person.relationships.build ] do |form| %>
   <p>
     <%= form.label :relationship_type %>
-    <%= form.select :relationship_type, ['Parent', 'Child'], selected: 'Parent' %>
+    <%= form.select :relationship_type, ['Parent', 'Child', 'Friend'], selected: 'Parent' %>
   </p>
 
   <p>
