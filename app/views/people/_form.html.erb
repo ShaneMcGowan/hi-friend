@@ -23,7 +23,7 @@
 
   <div>
     <%= form.label :gender %>
-    <%= form.text_field :gender %>
+    <%= form.collection_select :gender, ['Male', 'Female', 'Other'], :to_s, :to_s, include_blank: false %>    
     <% person.errors.full_messages_for(:gender).each do |message| %>
       <div>
         <%= message %>
