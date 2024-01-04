@@ -2,14 +2,57 @@
 
 <ul>
   <li><%= link_to "Edit", edit_person_path(@person) %></li>
-  <li><%= link_to "Destroy", person_path(@person), data: {
+  <li><%= link_to "Delete", person_path(@person), data: {
     turbo_method: :delete,
     turbo_confirm: "Are you sure?"
   } %></li>
 </ul>
 
-<h2>Relationships</h2>
-<%= render @person.relationships %>
+<h2>Personal Details</h2>
+<div>
+  <strong>Phone number:</strong>
+  <%= @person.phone_number %>
+  <br/>
+  <strong>Date of birth:</strong>
+  <%= @person.date_of_birth %>
+  <br/>
+  <strong>Date of death:</strong>
+  <%= @person.date_of_death %>
+  <br/>
+  <strong>Maiden name:</strong>
+  <%= @person.maiden_name %>
+  <br/>
+  <strong>Gender:</strong>
+  <%= @person.gender %>  
+  <br/>
+</div>
 
-<h2>Add relationship</h2>
-<%= render 'relationships/form' %>
+<h2>Parents</h2>
+
+<% if @person.mother %>
+  <li><%= link_to @person.mother.full_name, person_path(@person.mother) %></li>
+<% else %>
+  <li>No mother given</li>
+<% end%>
+
+<% if @person.father %>
+  <li><%= link_to @person.father.full_name, person_path(@person.father) %></li>
+<% else %>
+  <li>No father given</li>
+<% end%>
+
+<h2>Children</h2>
+<% @person.children.each do |child| %>
+  <li><%= link_to child.full_name, person_path(child) %></li>
+<% end %>
+<% if @person.children.blank? %>
+  No children
+<% end %>
+
+<h2>Siblings</h2>
+<% @person.siblings.each do |sibling| %>
+  <li><%= link_to sibling.full_name, person_path(sibling) %></li>
+<% end %>
+<% if @person.siblings.blank? %>
+  No siblings
+<% end %>

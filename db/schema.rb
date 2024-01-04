@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_12_19_233419) do
+ActiveRecord::Schema[7.1].define(version: 2023_12_30_101337) do
   create_table "people", force: :cascade do |t|
     t.string "first_name"
     t.string "last_name"
@@ -21,6 +21,8 @@ ActiveRecord::Schema[7.1].define(version: 2023_12_19_233419) do
     t.datetime "date_of_death"
     t.string "maiden_name"
     t.string "gender"
+    t.integer "mother_id"
+    t.integer "father_id"
   end
 
   create_table "relationships", force: :cascade do |t|
@@ -32,4 +34,6 @@ ActiveRecord::Schema[7.1].define(version: 2023_12_19_233419) do
     t.integer "of_id"
   end
 
+  add_foreign_key "people", "people", column: "father_id"
+  add_foreign_key "people", "people", column: "mother_id"
 end

@@ -1,4 +1,6 @@
 <%= form_with model: person do |form| %>
+
+  <h2>Personal Details</h2>
   <div>
     <%= form.label :first_name %>
     <%= form.text_field :first_name %>
@@ -69,7 +71,27 @@
     <% end %>
   </div>
 
+  <h2>Parents</h2>
   <div>
+    <%= form.label :mother_id %>
+    <%= form.collection_select :mother_id, Person.all, :id, :full_name, include_blank: 'None' %>
+    <% person.errors.full_messages_for(:mother_id).each do |message| %>
+      <div>
+        <%= message %>
+      </div>
+    <% end %>
+  </div>
+  <div>
+    <%= form.label :father_id %>
+    <%= form.collection_select :father_id, Person.all, :id, :full_name, include_blank: 'None' %>
+    <% person.errors.full_messages_for(:father_id).each do |message| %>
+      <div>
+        <%= message %>
+      </div>
+    <% end %>
+  <div>
+    
+  <div style="margin-top: 1rem;">
     <%= form.submit %>
   </div>
 <% end %>

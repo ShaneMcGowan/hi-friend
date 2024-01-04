@@ -4,7 +4,8 @@
 <% @people.each do |person| %>
   <li>
     <%= link_to person.full_name, person %>
-    (<%= person.relationships.size%> relationships)
+    (<%= person.children.size%> children)
+    (<%= person.siblings.size%> siblings)
   </li>
 <% end %>
 </ul>
