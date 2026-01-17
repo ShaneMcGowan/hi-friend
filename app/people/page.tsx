@@ -45,23 +45,11 @@ export default function PeoplePage() {
             </button>
           </div>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Left Sidebar - Contact List */}
-          <div className="lg:col-span-1">
-            <ContactList
-              contacts={filteredContacts}
-              searchTerm={searchTerm}
-              onSearchChange={setSearchTerm}
-            />
-          </div>
-
-          {/* Main Content */}
-          <div className="lg:col-span-3 space-y-6">
-            <div className="bg-white rounded-xl border border-border/40 p-6 shadow-sm text-center">
-              <p className="text-muted-foreground">Select a person to view their details</p>
-            </div>
-          </div>
-        </div>
+        <ContactList
+          contacts={filteredContacts}
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+        />
       </main>
     </div>
   )
