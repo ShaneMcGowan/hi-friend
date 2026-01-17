@@ -4,33 +4,20 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Users } from "lucide-react"
 import { ContactList } from "@/components/contact-list"
-import { ContactForm } from "@/components/contact-form"
 import { VcfImport } from "@/components/vcf-import"
 import { useContactsData } from "@/hooks/use-contacts-data"
-import type { Contact } from "@/lib/types"
 
 export default function PeoplePage() {
   const router = useRouter()
   const {
     contacts,
-    relationships,
-    addContact,
-    addRelationship,
-    removeRelationship,
     addContacts,
   } = useContactsData()
 
   const [searchTerm, setSearchTerm] = useState("")
-  const [isFormOpen, setIsFormOpen] = useState(false)
-
-  const handleAddContact = (contact: Contact) => {
-    addContact(contact, null)
-    setIsFormOpen(false)
-    router.push(`/people/${contact.id}`)
-  }
 
   const handleNewContact = () => {
-    setIsFormOpen(true)
+    router.push("/people/new")
   }
 
   const filteredContacts = contacts.filter(
@@ -70,23 +57,9 @@ export default function PeoplePage() {
 
           {/* Main Content */}
           <div className="lg:col-span-3 space-y-6">
-            {isFormOpen && (
-              <ContactForm
-                contact={null}
-                onSave={handleAddContact}
-                onCancel={() => setIsFormOpen(false)}
-                allContacts={contacts}
-                relationships={relationships}
-                onRelationshipAdd={addRelationship}
-                onRelationshipRemove={removeRelationship}
-              />
-            )}
-
-            {!isFormOpen && (
-              <div className="bg-white rounded-xl border border-border/40 p-6 shadow-sm text-center">
-                <p className="text-muted-foreground">Select a person to view their details</p>
-              </div>
-            )}
+            <div className="bg-white rounded-xl border border-border/40 p-6 shadow-sm text-center">
+              <p className="text-muted-foreground">Select a person to view their details</p>
+            </div>
           </div>
         </div>
       </main>
