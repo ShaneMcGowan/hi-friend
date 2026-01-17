@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { Network } from "lucide-react"
 import { RelationshipGraph } from "@/components/relationship-graph"
 import { ContactForm } from "@/components/contact-form"
 import { useContactsData } from "@/hooks/use-contacts-data"
@@ -41,7 +42,10 @@ export default function NetworkPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-secondary">
       <main className="max-w-7xl mx-auto px-4 py-8">
-        <h2 className="text-xl font-semibold text-foreground mb-6">Network</h2>
+        <div className="flex items-center gap-3 mb-6">
+          <Network className="w-6 h-6 text-primary" />
+          <h2 className="text-xl font-semibold text-foreground">Network</h2>
+        </div>
         <div className="space-y-6">
           <RelationshipGraph
             contacts={contacts}

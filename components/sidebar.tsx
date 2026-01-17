@@ -2,11 +2,12 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Users, Network, Bell } from "lucide-react"
+import { Users, Network, Bell, LayoutDashboard } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const navItems = [
-  { href: "/", label: "Contacts", icon: Users },
+  { href: "/", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/people", label: "People", icon: Users },
   { href: "/network", label: "Network", icon: Network },
   { href: "/reminders", label: "Reminders", icon: Bell },
 ]
