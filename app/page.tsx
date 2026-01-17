@@ -1,10 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import Link from "next/link"
 import { ContactList } from "@/components/contact-list"
 import { ContactForm } from "@/components/contact-form"
-import { UpcomingReminders } from "@/components/upcoming-reminders"
 import { ExportImport } from "@/components/export-import"
 import { useContactsData } from "@/hooks/use-contacts-data"
 import type { Contact } from "@/lib/types"
@@ -67,12 +65,6 @@ export default function Home() {
             </div>
             <div className="flex items-center gap-2">
               <ExportImport contacts={contacts} relationships={relationships} onImport={importData} onAddContacts={addContacts} />
-              <Link
-                href="/network"
-                className="px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 transition-colors font-medium"
-              >
-                Network View
-              </Link>
               <button
                 onClick={handleNewContact}
                 className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
@@ -248,7 +240,6 @@ export default function Home() {
               </div>
             )}
 
-            {!isFormOpen && !selectedContact && <UpcomingReminders contacts={contacts} />}
           </div>
         </div>
       </main>
