@@ -1,23 +1,18 @@
 "use client"
 
+import Link from "next/link"
 import type { Contact } from "@/lib/types"
 
 interface ContactListProps {
   contacts: Contact[]
-  selectedContact: Contact | null
-  onSelectContact: (contact: Contact) => void
-  onEditContact: (contact: Contact) => void
-  onDeleteContact: (id: string) => void
+  selectedContactId?: string | null
   searchTerm: string
   onSearchChange: (term: string) => void
 }
 
 export function ContactList({
   contacts,
-  selectedContact,
-  onSelectContact,
-  onEditContact,
-  onDeleteContact,
+  selectedContactId,
   searchTerm,
   onSearchChange,
 }: ContactListProps) {
@@ -46,11 +41,11 @@ export function ContactList({
           <p className="text-center text-muted-foreground py-8">No contacts yet. Create one to get started!</p>
         ) : (
           contacts.map((contact) => (
-            <div
+            <Link
               key={contact.id}
-              onClick={() => onSelectContact(contact)}
-              className={`p-3 rounded-lg border cursor-pointer transition-all ${
-                selectedContact?.id === contact.id
+              href={`/people/${contact.id}`}
+              className={`block p-3 rounded-lg border transition-all ${
+                selectedContactId === contact.id
                   ? "border-primary bg-primary/10"
                   : "border-border hover:border-primary/50 bg-white"
               }`}
@@ -68,7 +63,7 @@ export function ContactList({
                   {contact.email && <p className="text-xs text-muted-foreground truncate mt-1">{contact.email}</p>}
                 </div>
               </div>
-            </div>
+            </Link>
           ))
         )}
       </div>
