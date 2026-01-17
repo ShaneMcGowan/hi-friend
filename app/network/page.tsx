@@ -40,18 +40,8 @@ export default function NetworkPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-secondary">
-      <header className="border-b border-border/40 bg-white/80 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <h1 className="text-3xl font-bold text-primary">Hi, Friend</h1>
-              <p className="text-sm text-muted-foreground">Your personal CRM for friends & family</p>
-            </div>
-          </div>
-        </div>
-      </header>
-
       <main className="max-w-7xl mx-auto px-4 py-8">
+        <h2 className="text-xl font-semibold text-foreground mb-6">Network</h2>
         <div className="space-y-6">
           <RelationshipGraph
             contacts={contacts}

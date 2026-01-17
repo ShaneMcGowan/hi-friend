@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { ContactList } from "@/components/contact-list"
 import { ContactForm } from "@/components/contact-form"
-import { ExportImport } from "@/components/export-import"
+import { VcfImport } from "@/components/vcf-import"
 import { useContactsData } from "@/hooks/use-contacts-data"
 import type { Contact } from "@/lib/types"
 
@@ -15,7 +15,6 @@ export default function Home() {
     deleteContact,
     addRelationship,
     removeRelationship,
-    importData,
     addContacts,
   } = useContactsData()
 
@@ -56,27 +55,19 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-secondary">
-      <header className="border-b border-border/40 bg-white/80 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <h1 className="text-3xl font-bold text-primary">Hi, Friend</h1>
-              <p className="text-sm text-muted-foreground">Your personal CRM for friends & family</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <ExportImport contacts={contacts} relationships={relationships} onImport={importData} onAddContacts={addContacts} />
-              <button
-                onClick={handleNewContact}
-                className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
-              >
-                + New Contact
-              </button>
-            </div>
+      <main className="max-w-7xl mx-auto px-4 py-8">
+        <div className="flex items-center justify-between gap-4 mb-6">
+          <h2 className="text-xl font-semibold text-foreground">Contacts</h2>
+          <div className="flex items-center gap-2">
+            <VcfImport onAddContacts={addContacts} />
+            <button
+              onClick={handleNewContact}
+              className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
+            >
+              + New Contact
+            </button>
           </div>
         </div>
-      </header>
-
-      <main className="max-w-7xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Left Sidebar - Contact List */}
           <div className="lg:col-span-1">
