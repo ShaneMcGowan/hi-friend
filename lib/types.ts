@@ -1,7 +1,8 @@
 export interface Contact {
   id: string
   name: string
-  category?: string
+  category?: Category
+  categories?: string[]
   email?: string
   phone?: string
   address?: string
@@ -25,3 +26,6 @@ export interface Relationship {
   createdAt: string
   updatedAt: string
 }
+
+export type Category = "Family" | "Close Friends" | "Friends" | "Colleagues" | "Acquaintances";
+export const CATEGORIES: Category[] = ["Family", "Close Friends", "Friends", "Colleagues", "Acquaintances"]; // ordered list of categories
