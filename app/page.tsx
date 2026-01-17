@@ -87,6 +87,10 @@ export default function Home() {
     }
   }
 
+  const handleAddContacts = (newContacts: Contact[]) => {
+    setContacts((prev) => [...prev, ...newContacts])
+  }
+
   const filteredContacts = contacts.filter(
     (contact) =>
       contact.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -108,7 +112,7 @@ export default function Home() {
               <p className="text-sm text-muted-foreground">Your personal CRM for friends & family</p>
             </div>
             <div className="flex items-center gap-2">
-              <ExportImport contacts={contacts} relationships={relationships} onImport={handleImport} />
+              <ExportImport contacts={contacts} relationships={relationships} onImport={handleImport} onAddContacts={handleAddContacts} />
               <button
                 onClick={() => setShowGraph(!showGraph)}
                 className="px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 transition-colors font-medium"
