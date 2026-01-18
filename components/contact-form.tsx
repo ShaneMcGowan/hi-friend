@@ -28,7 +28,7 @@ export function ContactForm({
     contact || {
       id: Math.random().toString(36).substring(7),
       name: "",
-      category: "",
+      category: undefined,
       email: "",
       phone: "",
       address: "",
@@ -46,7 +46,21 @@ export function ContactForm({
   const [dateValue, setDateValue] = useState("")
   const [relationshipContactId, setRelationshipContactId] = useState("")
   const [relationshipType1To2, setRelationshipType1To2] = useState("")
-  const [relationshipType2To1, setRelationshipType2To1] = useState("")
+
+  // Helper function to infer opposite relationship
+  const getOppositeRelationship = (relationshipType: string): string => {
+    const opposites: Record<string, string> = {
+      Parent: "Child",
+      Child: "Parent",
+      Sibling: "Sibling",
+      Spouse: "Spouse",
+      Partner: "Partner",
+      Friend: "Friend",
+      Colleague: "Colleague",
+      Other: "Other",
+    }
+    return opposites[relationshipType] || "Other"
+  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -93,7 +107,8 @@ export function ContactForm({
   }
 
   const addRelationship = () => {
-    if (relationshipContactId && relationshipType1To2 && relationshipType2To1 && contact?.id) {
+    if (relationshipContactId && relationshipType1To2 && contact?.id) {
+      const relationshipType2To1 = getOppositeRelationship(relationshipType1To2)
       const newRelationship: Relationship = {
         id: Math.random().toString(36).substring(7),
         contactId1: contact.id,
@@ -106,7 +121,6 @@ export function ContactForm({
       onRelationshipAdd?.(newRelationship)
       setRelationshipContactId("")
       setRelationshipType1To2("")
-      setRelationshipType2To1("")
     }
   }
 
@@ -305,15 +319,21 @@ export function ContactForm({
                 ))}
               </select>
             </div>
-            <div className="grid grid-cols-2 gap-2">
+            {relationshipContactId && (
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block">I am their...</label>
+                <label className="text-xs text-muted-foreground mb-1 block">
+                  <span className="font-semibold text-foreground">{contact.name}</span> is the{" "}
+                  <span className="font-semibold text-foreground">
+                    {relationshipType1To2 || "[relationship]"}
+                  </span>{" "}
+                  of <span className="font-semibold text-foreground">{getContactName(relationshipContactId)}</span>
+                </label>
                 <select
                   value={relationshipType1To2}
                   onChange={(e) => setRelationshipType1To2(e.target.value)}
                   className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-foreground text-sm"
                 >
-                  <option value="">Select</option>
+                  <option value="">Select relationship</option>
                   <option value="Parent">Parent</option>
                   <option value="Child">Child</option>
                   <option value="Sibling">Sibling</option>
@@ -323,30 +343,18 @@ export function ContactForm({
                   <option value="Colleague">Colleague</option>
                   <option value="Other">Other</option>
                 </select>
+                {relationshipType1To2 && (
+                  <p className="text-xs text-muted-foreground mt-1 italic">
+                    {getContactName(relationshipContactId)} is your {getOppositeRelationship(relationshipType1To2).toLowerCase()}
+                  </p>
+                )}
               </div>
-              <div>
-                <label className="text-xs text-muted-foreground mb-1 block">They are my...</label>
-                <select
-                  value={relationshipType2To1}
-                  onChange={(e) => setRelationshipType2To1(e.target.value)}
-                  className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-foreground text-sm"
-                >
-                  <option value="">Select</option>
-                  <option value="Parent">Parent</option>
-                  <option value="Child">Child</option>
-                  <option value="Sibling">Sibling</option>
-                  <option value="Spouse">Spouse</option>
-                  <option value="Partner">Partner</option>
-                  <option value="Friend">Friend</option>
-                  <option value="Colleague">Colleague</option>
-                  <option value="Other">Other</option>
-                </select>
-              </div>
-            </div>
+            )}
             <button
               type="button"
               onClick={addRelationship}
-              className="w-full px-3 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 transition-colors"
+              disabled={!relationshipContactId || !relationshipType1To2}
+              className="w-full px-3 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Create Link
             </button>
