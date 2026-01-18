@@ -11,7 +11,7 @@ export function MainContent({ children }: { children: ReactNode }) {
     <div
       className={cn(
         "transition-all duration-300",
-        isExpanded ? "pl-48" : "pl-16"
+        isExpanded ? "pl-64" : "pl-16"
       )}
     >
       {children}

@@ -5,7 +5,6 @@ import { Analytics } from "@vercel/analytics/next"
 import { SidebarProvider } from "@/components/sidebar-context"
 import { Sidebar } from "@/components/sidebar"
 import { MainContent } from "@/components/main-content"
-import { Navbar } from "@/components/navbar"
 import "./globals.css"
 
 const _geist = Geist({ subsets: ["latin"] })
@@ -45,7 +44,6 @@ export default function RootLayout({
         <SidebarProvider>
           <Sidebar />
           <MainContent>
-            <Navbar />
             {children}
           </MainContent>
         </SidebarProvider>
