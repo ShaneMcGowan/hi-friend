@@ -14,7 +14,8 @@ export function useContactsData() {
 
     if (savedContacts) {
       try {
-        setContacts(JSON.parse(savedContacts))
+        const parsed = JSON.parse(savedContacts)
+        setContacts(Array.isArray(parsed) ? parsed : [])
       } catch (e) {
         console.error("Failed to load contacts:", e)
       }

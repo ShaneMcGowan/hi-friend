@@ -172,13 +172,41 @@ export default function PersonPage() {
             )}
 
             {/* Contact Info */}
-            {contact.phone && (
+            {contact.phones && contact.phones.length > 0 && (
+              <div>
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Phone Numbers</p>
+                <div className="space-y-2">
+                  {contact.phones.map((phone, idx) => (
+                    <div key={idx} className="py-2 px-3 bg-muted rounded-lg">
+                      <span className="text-sm font-semibold text-foreground">{phone.label}:</span>
+                      <p className="text-foreground mt-1">{phone.value}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            {/* Legacy support for old phone field */}
+            {(!contact.phones || contact.phones.length === 0) && contact.phone && (
               <div>
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Phone</p>
                 <p className="text-foreground mt-1">{contact.phone}</p>
               </div>
             )}
-            {contact.email && (
+            {contact.emails && contact.emails.length > 0 && (
+              <div>
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Email Addresses</p>
+                <div className="space-y-2">
+                  {contact.emails.map((email, idx) => (
+                    <div key={idx} className="py-2 px-3 bg-muted rounded-lg">
+                      <span className="text-sm font-semibold text-foreground">{email.label}:</span>
+                      <p className="text-foreground mt-1">{email.value}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            {/* Legacy support for old email field */}
+            {(!contact.emails || contact.emails.length === 0) && contact.email && (
               <div>
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Email</p>
                 <p className="text-foreground mt-1">{contact.email}</p>

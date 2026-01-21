@@ -68,9 +68,14 @@ export default function PeoplePage() {
   const filteredContacts = contacts.filter((contact) => {
     // Search filter
     const displayName = getDisplayName(contact)
+    const emailMatches = contact.emails?.some((e) => e.value.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (contact.email?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false) // Legacy support
+    const phoneMatches = contact.phones?.some((p) => p.value.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (contact.phone?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false) // Legacy support
     const matchesSearch =
       displayName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      contact.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      emailMatches ||
+      phoneMatches ||
       contact.interests?.some((i) => i.toLowerCase().includes(searchTerm.toLowerCase()))
 
     if (!matchesSearch) return false

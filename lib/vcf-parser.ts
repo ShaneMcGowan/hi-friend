@@ -3,8 +3,8 @@ import type { Contact } from "./types"
 interface VCardData {
   fn?: string
   n?: { family?: string; given?: string; middle?: string; prefix?: string; suffix?: string }
-  email?: string[]
-  tel?: string[]
+  email?: Array<{ value: string; label?: string }>
+  tel?: Array<{ value: string; label?: string }>
   adr?: string
   bday?: string
   note?: string
@@ -84,15 +84,54 @@ function parseVCard(vcard: string): VCardData | null {
         break
       }
 
-      case "EMAIL":
+      case "EMAIL": {
         if (!data.email) data.email = []
-        data.email.push(decodeVCardValue(value))
+        // Extract TYPE parameter for label (e.g., EMAIL;TYPE=WORK:email@example.com)
+        const params = keyPart.split(";").slice(1)
+        let label: string | undefined
+        for (const param of params) {
+          if (param.toUpperCase().startsWith("TYPE=")) {
+            const typeValue = param.split("=")[1]?.toUpperCase()
+            // Map common types to readable labels
+            const typeMap: Record<string, string> = {
+              WORK: "Work",
+              HOME: "Home",
+              CELL: "Mobile",
+              MOBILE: "Mobile",
+              OTHER: "Other",
+            }
+            label = typeMap[typeValue] || typeValue.charAt(0) + typeValue.slice(1).toLowerCase()
+            break
+          }
+        }
+        data.email.push({ value: decodeVCardValue(value), label })
         break
+      }
 
-      case "TEL":
+      case "TEL": {
         if (!data.tel) data.tel = []
-        data.tel.push(decodeVCardValue(value))
+        // Extract TYPE parameter for label (e.g., TEL;TYPE=CELL:+1234567890)
+        const params = keyPart.split(";").slice(1)
+        let label: string | undefined
+        for (const param of params) {
+          if (param.toUpperCase().startsWith("TYPE=")) {
+            const typeValue = param.split("=")[1]?.toUpperCase()
+            // Map common types to readable labels
+            const typeMap: Record<string, string> = {
+              WORK: "Work",
+              HOME: "Home",
+              CELL: "Mobile",
+              MOBILE: "Mobile",
+              FAX: "Fax",
+              OTHER: "Other",
+            }
+            label = typeMap[typeValue] || typeValue.charAt(0) + typeValue.slice(1).toLowerCase()
+            break
+          }
+        }
+        data.tel.push({ value: decodeVCardValue(value), label })
         break
+      }
 
       case "ADR": {
         // ADR:;;Street;City;State;PostalCode;Country
@@ -164,6 +203,18 @@ function vcardToContact(data: VCardData): Contact | null {
 
   const now = new Date().toISOString()
 
+  // Convert email array to labeled emails
+  const emails = data.email?.map((email, idx) => ({
+    label: email.label || (idx === 0 ? "Email" : `Email ${idx + 1}`),
+    value: email.value,
+  })) || []
+
+  // Convert phone array to labeled phones
+  const phones = data.tel?.map((tel, idx) => ({
+    label: tel.label || (idx === 0 ? "Phone" : `Phone ${idx + 1}`),
+    value: tel.value,
+  })) || []
+
   return {
     id: generateId(),
     // Map vCard N field to structured name fields
@@ -172,8 +223,8 @@ function vcardToContact(data: VCardData): Contact | null {
     additionalNames: data.n?.middle,
     familyName: data.n?.family,
     honorificSuffixes: data.n?.suffix,
-    email: data.email?.[0],
-    phone: data.tel?.[0],
+    emails: emails.length > 0 ? emails : undefined,
+    phones: phones.length > 0 ? phones : undefined,
     address: data.adr,
     birthday: data.bday,
     category: undefined,

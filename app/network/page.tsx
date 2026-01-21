@@ -95,16 +95,44 @@ export default function NetworkPage() {
               </div>
 
               <div className="space-y-6">
-                {selectedContact.phone && (
+                {selectedContact.phones && selectedContact.phones.length > 0 && (
                   <div>
-                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Phone</p>
-                    <p className="text-foreground mt-1">{selectedContact.phone}</p>
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Phone Numbers</p>
+                    <div className="space-y-2">
+                      {selectedContact.phones.map((phone, idx) => (
+                        <div key={idx} className="py-2 px-3 bg-muted rounded-lg">
+                          <span className="text-sm font-semibold text-foreground">{phone.label}:</span>
+                          <p className="text-foreground mt-1">{phone.value}</p>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
-                {selectedContact.email && (
+                {/* Legacy support for old phone field */}
+                {(!selectedContact.phones || selectedContact.phones.length === 0) && (selectedContact as any).phone && (
+                  <div>
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Phone</p>
+                    <p className="text-foreground mt-1">{(selectedContact as any).phone}</p>
+                  </div>
+                )}
+                {selectedContact.emails && selectedContact.emails.length > 0 && (
+                  <div>
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Email Addresses</p>
+                    <div className="space-y-2">
+                      {selectedContact.emails.map((email, idx) => (
+                        <div key={idx} className="py-2 px-3 bg-muted rounded-lg">
+                          <span className="text-sm font-semibold text-foreground">{email.label}:</span>
+                          <p className="text-foreground mt-1">{email.value}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {/* Legacy support for old email field */}
+                {(!selectedContact.emails || selectedContact.emails.length === 0) && (selectedContact as any).email && (
                   <div>
                     <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Email</p>
-                    <p className="text-foreground mt-1">{selectedContact.email}</p>
+                    <p className="text-foreground mt-1">{(selectedContact as any).email}</p>
                   </div>
                 )}
 

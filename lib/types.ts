@@ -9,8 +9,14 @@ export interface Contact {
   maidenName?: string // Birth surname before marriage
   category?: Category
   categories?: string[]
-  email?: string
-  phone?: string
+  emails?: {
+    label: string
+    value: string
+  }[]
+  phones?: {
+    label: string
+    value: string
+  }[]
   address?: string
   birthday?: string
   isDeceased?: boolean

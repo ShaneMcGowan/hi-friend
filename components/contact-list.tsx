@@ -61,7 +61,16 @@ export function ContactList({
                       {contact.category}
                     </span>
                   )}
-                  {contact.email && <p className="text-xs text-muted-foreground truncate mt-1">{contact.email}</p>}
+                  {contact.emails && contact.emails.length > 0 && (
+                    <p className="text-xs text-muted-foreground truncate mt-1">
+                      {contact.emails[0].value}
+                      {contact.emails.length > 1 && ` (+${contact.emails.length - 1} more)`}
+                    </p>
+                  )}
+                  {/* Legacy support for old email field */}
+                  {(!contact.emails || contact.emails.length === 0) && contact.email && (
+                    <p className="text-xs text-muted-foreground truncate mt-1">{contact.email}</p>
+                  )}
                 </div>
               </div>
             </Link>

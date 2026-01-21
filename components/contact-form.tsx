@@ -28,28 +28,37 @@ export function ContactForm({
   formId = "contact-form",
 }: ContactFormProps) {
   const [formData, setFormData] = useState<Contact>(
-    contact || {
-      id: Math.random().toString(36).substring(7),
-      familyName: "",
-      givenName: "",
-      additionalNames: "",
-      honorificPrefixes: "",
-      honorificSuffixes: "",
-      maidenName: "",
-      category: undefined,
-      email: "",
-      phone: "",
-      address: "",
-      birthday: "",
-      isDeceased: false,
-      deathDate: "",
-      parentIds: [],
-      interests: [],
-      importantDates: [],
-      notes: "",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    },
+    contact
+      ? {
+          ...contact,
+          emails: contact.emails || [],
+          phones: contact.phones || [],
+          parentIds: contact.parentIds || [],
+          interests: contact.interests || [],
+          importantDates: contact.importantDates || [],
+        }
+      : {
+          id: Math.random().toString(36).substring(7),
+          familyName: "",
+          givenName: "",
+          additionalNames: "",
+          honorificPrefixes: "",
+          honorificSuffixes: "",
+          maidenName: "",
+          category: undefined,
+          emails: [],
+          phones: [],
+          address: "",
+          birthday: "",
+          isDeceased: false,
+          deathDate: "",
+          parentIds: [],
+          interests: [],
+          importantDates: [],
+          notes: "",
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        }
   )
 
   const [interestInput, setInterestInput] = useState("")
@@ -58,6 +67,10 @@ export function ContactForm({
   const [relationshipContactId, setRelationshipContactId] = useState("")
   const [relationshipType1To2, setRelationshipType1To2] = useState("")
   const [showMoreNameFields, setShowMoreNameFields] = useState(false)
+  const [emailLabel, setEmailLabel] = useState("")
+  const [emailValue, setEmailValue] = useState("")
+  const [phoneLabel, setPhoneLabel] = useState("")
+  const [phoneValue, setPhoneValue] = useState("")
 
   // Helper function to infer opposite relationship
   const getOppositeRelationship = (relationshipType: string): string => {
@@ -115,6 +128,42 @@ export function ContactForm({
     setFormData((prev) => ({
       ...prev,
       importantDates: prev.importantDates?.filter((_, i) => i !== index) || [],
+    }))
+  }
+
+  const addEmail = () => {
+    if (emailValue.trim()) {
+      setFormData((prev) => ({
+        ...prev,
+        emails: [...(prev.emails || []), { label: emailLabel.trim() || "Email", value: emailValue.trim() }],
+      }))
+      setEmailLabel("")
+      setEmailValue("")
+    }
+  }
+
+  const removeEmail = (index: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      emails: prev.emails?.filter((_, i) => i !== index) || [],
+    }))
+  }
+
+  const addPhone = () => {
+    if (phoneValue.trim()) {
+      setFormData((prev) => ({
+        ...prev,
+        phones: [...(prev.phones || []), { label: phoneLabel.trim() || "Phone", value: phoneValue.trim() }],
+      }))
+      setPhoneLabel("")
+      setPhoneValue("")
+    }
+  }
+
+  const removePhone = (index: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      phones: prev.phones?.filter((_, i) => i !== index) || [],
     }))
   }
 
@@ -262,27 +311,93 @@ export function ContactForm({
             <option value="Other">Other</option>
           </select>
         </div>
-        <div>
-          <label className="block text-sm font-semibold text-foreground mb-2">Email</label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email || ""}
-            onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
-            placeholder="email@example.com"
-          />
+        {/* Emails */}
+        <div className="md:col-span-2">
+          <label className="block text-sm font-semibold text-foreground mb-2">Email Addresses</label>
+          <div className="flex gap-2 mb-2">
+            <input
+              type="text"
+              value={emailLabel}
+              onChange={(e) => setEmailLabel(e.target.value)}
+              placeholder="Label (e.g., Work, Personal)"
+              className="w-1/3 px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
+            />
+            <input
+              type="email"
+              value={emailValue}
+              onChange={(e) => setEmailValue(e.target.value)}
+              onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addEmail())}
+              placeholder="email@example.com"
+              className="flex-1 px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
+            />
+            <button
+              type="button"
+              onClick={addEmail}
+              className="px-3 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 transition-colors"
+            >
+              Add
+            </button>
+          </div>
+          <div className="space-y-2">
+            {formData.emails?.map((email, idx) => (
+              <div key={idx} className="flex justify-between items-center py-2 px-3 bg-muted rounded-lg">
+                <span className="text-foreground">
+                  <span className="font-semibold">{email.label}:</span> {email.value}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => removeEmail(idx)}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
-        <div>
-          <label className="block text-sm font-semibold text-foreground mb-2">Phone</label>
-          <input
-            type="tel"
-            name="phone"
-            value={formData.phone || ""}
-            onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
-            placeholder="+1 (555) 000-0000"
-          />
+        {/* Phones */}
+        <div className="md:col-span-2">
+          <label className="block text-sm font-semibold text-foreground mb-2">Phone Numbers</label>
+          <div className="flex gap-2 mb-2">
+            <input
+              type="text"
+              value={phoneLabel}
+              onChange={(e) => setPhoneLabel(e.target.value)}
+              placeholder="Label (e.g., Mobile, Work)"
+              className="w-1/3 px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
+            />
+            <input
+              type="tel"
+              value={phoneValue}
+              onChange={(e) => setPhoneValue(e.target.value)}
+              onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addPhone())}
+              placeholder="+1 (555) 000-0000"
+              className="flex-1 px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
+            />
+            <button
+              type="button"
+              onClick={addPhone}
+              className="px-3 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 transition-colors"
+            >
+              Add
+            </button>
+          </div>
+          <div className="space-y-2">
+            {formData.phones?.map((phone, idx) => (
+              <div key={idx} className="flex justify-between items-center py-2 px-3 bg-muted rounded-lg">
+                <span className="text-foreground">
+                  <span className="font-semibold">{phone.label}:</span> {phone.value}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => removePhone(idx)}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
         <div className="md:col-span-2">
           <label className="block text-sm font-semibold text-foreground mb-2">Address</label>
