@@ -1,9 +1,11 @@
 "use client"
 
+import { useMemo } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { ArrowLeft, Pencil, Trash2 } from "lucide-react"
 import Link from "next/link"
 import { useContactsData } from "@/hooks/use-contacts-data"
+import { FamilyGraph } from "@/lib/family-graph"
 
 export default function PersonPage() {
   const params = useParams()
@@ -22,72 +24,13 @@ export default function PersonPage() {
     ? relationships.filter((r) => r.contactId1 === contact.id || r.contactId2 === contact.id)
     : []
 
-  // Infer family relationships from parentIds
-  const siblings = contact?.parentIds?.length
-    ? contacts.filter(
-        (c) =>
-          c.id !== contact.id &&
-          c.parentIds?.some((pid) => contact.parentIds?.includes(pid))
-      )
-    : []
+  // Build family graph and infer relationships
+  const familyGraph = useMemo(() => new FamilyGraph(contacts), [contacts])
 
-  const children = contact
-    ? contacts.filter((c) => c.parentIds?.includes(contact.id))
-    : []
-
-  // Extended family: grandparents, grandchildren, aunts/uncles, nieces/nephews
-  const extendedFamily: { contact: typeof contacts[0]; relation: string }[] = []
-
-  if (contact) {
-    // Grandparents (parents of parents)
-    const parentContacts = contacts.filter((c) => contact.parentIds?.includes(c.id))
-    for (const parent of parentContacts) {
-      if (parent.parentIds) {
-        for (const grandparentId of parent.parentIds) {
-          const grandparent = contacts.find((c) => c.id === grandparentId)
-          if (grandparent && !extendedFamily.some((ef) => ef.contact.id === grandparent.id)) {
-            extendedFamily.push({ contact: grandparent, relation: "Grandparent" })
-          }
-        }
-      }
-    }
-
-    // Grandchildren (children of children)
-    for (const child of children) {
-      const grandchildren = contacts.filter((c) => c.parentIds?.includes(child.id))
-      for (const grandchild of grandchildren) {
-        if (!extendedFamily.some((ef) => ef.contact.id === grandchild.id)) {
-          extendedFamily.push({ contact: grandchild, relation: "Grandchild" })
-        }
-      }
-    }
-
-    // Aunts/Uncles (siblings of parents)
-    for (const parent of parentContacts) {
-      const parentSiblings = parent.parentIds?.length
-        ? contacts.filter(
-            (c) =>
-              c.id !== parent.id &&
-              c.parentIds?.some((pid) => parent.parentIds?.includes(pid))
-          )
-        : []
-      for (const auntUncle of parentSiblings) {
-        if (!extendedFamily.some((ef) => ef.contact.id === auntUncle.id)) {
-          extendedFamily.push({ contact: auntUncle, relation: "Aunt/Uncle" })
-        }
-      }
-    }
-
-    // Nieces/Nephews (children of siblings)
-    for (const sibling of siblings) {
-      const niecesNephews = contacts.filter((c) => c.parentIds?.includes(sibling.id))
-      for (const nieceNephew of niecesNephews) {
-        if (!extendedFamily.some((ef) => ef.contact.id === nieceNephew.id)) {
-          extendedFamily.push({ contact: nieceNephew, relation: "Niece/Nephew" })
-        }
-      }
-    }
-  }
+  const parents = contact ? familyGraph.getParents(contact.id) : []
+  const children = contact ? familyGraph.getChildren(contact.id) : []
+  const siblings = contact ? familyGraph.getAllSiblings(contact.id) : []
+  const extendedFamily = contact ? familyGraph.getExtendedFamily(contact.id) : []
 
   const handleDelete = () => {
     if (contact) {
@@ -192,26 +135,22 @@ export default function PersonPage() {
             )}
 
             {/* Parents */}
-            {contact.parentIds && contact.parentIds.length > 0 && (
+            {parents.length > 0 && (
               <div>
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
                   Parents
                 </p>
                 <div className="space-y-2">
-                  {contact.parentIds.map((parentId) => {
-                    const parent = contacts.find((c) => c.id === parentId)
-                    if (!parent) return null
-                    return (
-                      <Link
-                        key={parentId}
-                        href={`/people/${parentId}`}
-                        className="flex justify-between items-center py-2 px-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors"
-                      >
-                        <span className="text-foreground font-semibold">{parent.name}</span>
-                        <span className="text-xs text-muted-foreground">Click to view</span>
-                      </Link>
-                    )
-                  })}
+                  {parents.map((parent) => (
+                    <Link
+                      key={parent.id}
+                      href={`/people/${parent.id}`}
+                      className="flex justify-between items-center py-2 px-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors"
+                    >
+                      <span className="text-foreground font-semibold">{parent.name}</span>
+                      <span className="text-xs text-muted-foreground">Click to view</span>
+                    </Link>
+                  ))}
                 </div>
               </div>
             )}

@@ -2,8 +2,9 @@
 
 import type React from "react"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useMemo } from "react"
 import type { Contact, Relationship } from "@/lib/types"
+import { FamilyGraph } from "@/lib/family-graph"
 
 interface RelationshipGraphProps {
   contacts: Contact[]
@@ -19,6 +20,10 @@ export function RelationshipGraph({
   onContactClick,
 }: RelationshipGraphProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+
+  // Build family graph for inferred relationships
+  const familyGraph = useMemo(() => new FamilyGraph(contacts), [contacts])
+  const familyEdges = useMemo(() => familyGraph.getAllFamilyEdges(), [familyGraph])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -46,39 +51,55 @@ export function RelationshipGraph({
       positions.set(contact.id, { x, y })
     })
 
-    // Draw connections
-    ctx.strokeStyle = "#e5e7eb"
-    ctx.lineWidth = 2
+    // Track drawn edges to avoid duplicates
+    const drawnEdges = new Set<string>()
+
+    // Helper to draw an edge
+    const drawEdge = (id1: string, id2: string, label: string, color: string) => {
+      const edgeKey = [id1, id2].sort().join("-")
+      if (drawnEdges.has(edgeKey)) return
+      drawnEdges.add(edgeKey)
+
+      const pos1 = positions.get(id1)
+      const pos2 = positions.get(id2)
+      if (!pos1 || !pos2) return
+
+      ctx.strokeStyle = color
+      ctx.lineWidth = 2
+      ctx.beginPath()
+      ctx.moveTo(pos1.x, pos1.y)
+      ctx.lineTo(pos2.x, pos2.y)
+      ctx.stroke()
+
+      // Draw relationship label midpoint
+      const midX = (pos1.x + pos2.x) / 2
+      const midY = (pos1.y + pos2.y) / 2
+      ctx.fillStyle = "#ffffff"
+      ctx.strokeStyle = "#d1d5db"
+      ctx.lineWidth = 1
+      ctx.font = "12px sans-serif"
+      ctx.textAlign = "center"
+
+      const labelWidth = ctx.measureText(label).width + 8
+      const labelHeight = 16
+
+      // Draw background for label
+      ctx.strokeRect(midX - labelWidth / 2, midY - labelHeight / 2, labelWidth, labelHeight)
+      ctx.fillRect(midX - labelWidth / 2, midY - labelHeight / 2, labelWidth, labelHeight)
+
+      // Draw text
+      ctx.fillStyle = "#6b7280"
+      ctx.fillText(label, midX, midY + 4)
+    }
+
+    // Draw family edges (inferred from parentIds) in orange
+    familyEdges.forEach((edge) => {
+      drawEdge(edge.from, edge.to, edge.type, "#f97316")
+    })
+
+    // Draw explicit relationships in gray
     relationships.forEach((rel) => {
-      const pos1 = positions.get(rel.contactId1)
-      const pos2 = positions.get(rel.contactId2)
-      if (pos1 && pos2) {
-        ctx.beginPath()
-        ctx.moveTo(pos1.x, pos1.y)
-        ctx.lineTo(pos2.x, pos2.y)
-        ctx.stroke()
-
-        // Draw relationship label midpoint
-        const midX = (pos1.x + pos2.x) / 2
-        const midY = (pos1.y + pos2.y) / 2
-        ctx.fillStyle = "#ffffff"
-        ctx.strokeStyle = "#d1d5db"
-        ctx.lineWidth = 1
-        ctx.font = "12px sans-serif"
-        ctx.textAlign = "center"
-
-        const label = rel.type1To2
-        const labelWidth = ctx.measureText(label).width + 8
-        const labelHeight = 16
-
-        // Draw background for label
-        ctx.strokeRect(midX - labelWidth / 2, midY - labelHeight / 2, labelWidth, labelHeight)
-        ctx.fillRect(midX - labelWidth / 2, midY - labelHeight / 2, labelWidth, labelHeight)
-
-        // Draw text
-        ctx.fillStyle = "#6b7280"
-        ctx.fillText(label, midX, midY + 4)
-      }
+      drawEdge(rel.contactId1, rel.contactId2, rel.type1To2, "#e5e7eb")
     })
 
     // Draw nodes
@@ -116,7 +137,7 @@ export function RelationshipGraph({
       const nameTruncated = contact.name.length > 12 ? contact.name.substring(0, 12) + "..." : contact.name
       ctx.fillText(nameTruncated, pos.x, pos.y + nodeRadius + 18)
     })
-  }, [contacts, relationships, selectedContact])
+  }, [contacts, relationships, selectedContact, familyEdges])
 
   const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current
