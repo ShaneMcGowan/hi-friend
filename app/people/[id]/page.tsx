@@ -22,6 +22,73 @@ export default function PersonPage() {
     ? relationships.filter((r) => r.contactId1 === contact.id || r.contactId2 === contact.id)
     : []
 
+  // Infer family relationships from parentIds
+  const siblings = contact?.parentIds?.length
+    ? contacts.filter(
+        (c) =>
+          c.id !== contact.id &&
+          c.parentIds?.some((pid) => contact.parentIds?.includes(pid))
+      )
+    : []
+
+  const children = contact
+    ? contacts.filter((c) => c.parentIds?.includes(contact.id))
+    : []
+
+  // Extended family: grandparents, grandchildren, aunts/uncles, nieces/nephews
+  const extendedFamily: { contact: typeof contacts[0]; relation: string }[] = []
+
+  if (contact) {
+    // Grandparents (parents of parents)
+    const parentContacts = contacts.filter((c) => contact.parentIds?.includes(c.id))
+    for (const parent of parentContacts) {
+      if (parent.parentIds) {
+        for (const grandparentId of parent.parentIds) {
+          const grandparent = contacts.find((c) => c.id === grandparentId)
+          if (grandparent && !extendedFamily.some((ef) => ef.contact.id === grandparent.id)) {
+            extendedFamily.push({ contact: grandparent, relation: "Grandparent" })
+          }
+        }
+      }
+    }
+
+    // Grandchildren (children of children)
+    for (const child of children) {
+      const grandchildren = contacts.filter((c) => c.parentIds?.includes(child.id))
+      for (const grandchild of grandchildren) {
+        if (!extendedFamily.some((ef) => ef.contact.id === grandchild.id)) {
+          extendedFamily.push({ contact: grandchild, relation: "Grandchild" })
+        }
+      }
+    }
+
+    // Aunts/Uncles (siblings of parents)
+    for (const parent of parentContacts) {
+      const parentSiblings = parent.parentIds?.length
+        ? contacts.filter(
+            (c) =>
+              c.id !== parent.id &&
+              c.parentIds?.some((pid) => parent.parentIds?.includes(pid))
+          )
+        : []
+      for (const auntUncle of parentSiblings) {
+        if (!extendedFamily.some((ef) => ef.contact.id === auntUncle.id)) {
+          extendedFamily.push({ contact: auntUncle, relation: "Aunt/Uncle" })
+        }
+      }
+    }
+
+    // Nieces/Nephews (children of siblings)
+    for (const sibling of siblings) {
+      const niecesNephews = contacts.filter((c) => c.parentIds?.includes(sibling.id))
+      for (const nieceNephew of niecesNephews) {
+        if (!extendedFamily.some((ef) => ef.contact.id === nieceNephew.id)) {
+          extendedFamily.push({ contact: nieceNephew, relation: "Niece/Nephew" })
+        }
+      }
+    }
+  }
+
   const handleDelete = () => {
     if (contact) {
       deleteContact(contact.id)
@@ -135,6 +202,72 @@ export default function PersonPage() {
                       </Link>
                     )
                   })}
+                </div>
+              </div>
+            )}
+
+            {/* Siblings */}
+            {siblings.length > 0 && (
+              <div>
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                  Siblings
+                </p>
+                <div className="space-y-2">
+                  {siblings.map((sibling) => (
+                    <Link
+                      key={sibling.id}
+                      href={`/people/${sibling.id}`}
+                      className="flex justify-between items-center py-2 px-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors"
+                    >
+                      <span className="text-foreground font-semibold">{sibling.name}</span>
+                      <span className="text-xs text-muted-foreground">Click to view</span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Children */}
+            {children.length > 0 && (
+              <div>
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                  Children
+                </p>
+                <div className="space-y-2">
+                  {children.map((child) => (
+                    <Link
+                      key={child.id}
+                      href={`/people/${child.id}`}
+                      className="flex justify-between items-center py-2 px-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors"
+                    >
+                      <span className="text-foreground font-semibold">{child.name}</span>
+                      <span className="text-xs text-muted-foreground">Click to view</span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Extended Family */}
+            {extendedFamily.length > 0 && (
+              <div>
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                  Family
+                </p>
+                <div className="space-y-2">
+                  {extendedFamily.map((ef) => (
+                    <Link
+                      key={ef.contact.id}
+                      href={`/people/${ef.contact.id}`}
+                      className="flex justify-between items-center py-2 px-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors"
+                    >
+                      <div>
+                        <span className="text-foreground font-semibold">{ef.contact.name}</span>
+                        <span className="text-muted-foreground"> ({ef.relation})</span>
+                      </div>
+                      <span className="text-xs text-muted-foreground">Click to view</span>
+                    </Link>
+                  ))}
                 </div>
               </div>
             )}
