@@ -114,6 +114,31 @@ export default function PersonPage() {
               </div>
             )}
 
+            {/* Parents */}
+            {contact.parentIds && contact.parentIds.length > 0 && (
+              <div>
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                  Parents
+                </p>
+                <div className="space-y-2">
+                  {contact.parentIds.map((parentId) => {
+                    const parent = contacts.find((c) => c.id === parentId)
+                    if (!parent) return null
+                    return (
+                      <Link
+                        key={parentId}
+                        href={`/people/${parentId}`}
+                        className="flex justify-between items-center py-2 px-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors"
+                      >
+                        <span className="text-foreground font-semibold">{parent.name}</span>
+                        <span className="text-xs text-muted-foreground">Click to view</span>
+                      </Link>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+
             {/* Relationships */}
             {contactRelationships.length > 0 && (
               <div>

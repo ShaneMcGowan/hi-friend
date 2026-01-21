@@ -33,6 +33,7 @@ export function ContactForm({
       phone: "",
       address: "",
       birthday: "",
+      parentIds: [],
       interests: [],
       importantDates: [],
       notes: "",
@@ -221,6 +222,61 @@ export function ContactForm({
         </div>
       </div>
 
+      {/* Parents */}
+      <div>
+        <label className="block text-sm font-semibold text-foreground mb-2">Parents</label>
+        <p className="text-xs text-muted-foreground mb-2">Select up to 2 parents from your contacts</p>
+        {(formData.parentIds?.length || 0) < 2 && (
+          <div className="mb-2">
+            <select
+              value=""
+              onChange={(e) => {
+                if (e.target.value) {
+                  setFormData((prev) => ({
+                    ...prev,
+                    parentIds: [...(prev.parentIds || []), e.target.value],
+                    updatedAt: new Date().toISOString(),
+                  }))
+                }
+              }}
+              className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
+            >
+              <option value="">Select a parent</option>
+              {allContacts
+                .filter((c) => c.id !== formData.id && !formData.parentIds?.includes(c.id))
+                .map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+            </select>
+          </div>
+        )}
+        <div className="space-y-2">
+          {formData.parentIds?.map((parentId) => {
+            const parent = allContacts.find((c) => c.id === parentId)
+            return (
+              <div key={parentId} className="flex justify-between items-center py-2 px-3 bg-muted rounded-lg">
+                <span className="text-foreground">{parent?.name || "Unknown Contact"}</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFormData((prev) => ({
+                      ...prev,
+                      parentIds: prev.parentIds?.filter((id) => id !== parentId) || [],
+                      updatedAt: new Date().toISOString(),
+                    }))
+                  }}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  ×
+                </button>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
       {/* Interests */}
       <div>
         <label className="block text-sm font-semibold text-foreground mb-2">Interests & Preferences</label>
@@ -334,9 +390,6 @@ export function ContactForm({
                   className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-foreground text-sm"
                 >
                   <option value="">Select relationship</option>
-                  <option value="Parent">Parent</option>
-                  <option value="Child">Child</option>
-                  <option value="Sibling">Sibling</option>
                   <option value="Spouse">Spouse</option>
                   <option value="Partner">Partner</option>
                   <option value="Friend">Friend</option>

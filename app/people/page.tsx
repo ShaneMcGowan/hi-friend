@@ -47,6 +47,7 @@ export default function PeoplePage() {
         </div>
         <ContactList
           contacts={filteredContacts}
+          allContacts={contacts}
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
         />
