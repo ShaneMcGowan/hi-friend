@@ -30,5 +30,5 @@ export interface Relationship {
   updatedAt: string
 }
 
-export type Category = "Family" | "Close Friends" | "Friends" | "Colleagues" | "Acquaintances";
-export const CATEGORIES: Category[] = ["Family", "Close Friends", "Friends", "Colleagues", "Acquaintances"]; // ordered list of categories
+export type Category = "Family" | "Close Friends" | "Friends" | "Colleagues" | "Acquaintances" | "Other";
+export const CATEGORIES: Category[] = ["Family", "Close Friends", "Friends", "Colleagues", "Acquaintances", "Other"]; // ordered list of categories

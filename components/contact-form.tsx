@@ -177,6 +177,7 @@ export function ContactForm({
             <option value="Friends">Friends</option>
             <option value="Colleagues">Colleagues</option>
             <option value="Acquaintances">Acquaintances</option>
+            <option value="Other">Other</option>
           </select>
         </div>
         <div>

@@ -17,9 +17,10 @@ export default function PeoplePage() {
 
   const [searchTerm, setSearchTerm] = useState("")
   const [showFilters, setShowFilters] = useState(false)
-  const [selectedCategories, setSelectedCategories] = useState<Category[]>([])
+  const [selectedCategories, setSelectedCategories] = useState<(Category | "none")[]>([])
   const [birthdayFilter, setBirthdayFilter] = useState<"all" | "has" | "missing">("all")
   const [selectedInterests, setSelectedInterests] = useState<string[]>([])
+  const [showDeceased, setShowDeceased] = useState(false)
 
   // Get all unique interests from contacts
   const allInterests = useMemo(() => {
@@ -34,7 +35,7 @@ export default function PeoplePage() {
     router.push("/people/new")
   }
 
-  const toggleCategory = (category: Category) => {
+  const toggleCategory = (category: Category | "none") => {
     setSelectedCategories(prev =>
       prev.includes(category)
         ? prev.filter(c => c !== category)
@@ -54,12 +55,14 @@ export default function PeoplePage() {
     setSelectedCategories([])
     setBirthdayFilter("all")
     setSelectedInterests([])
+    setShowDeceased(false)
   }
 
   const activeFilterCount =
     selectedCategories.length +
     (birthdayFilter !== "all" ? 1 : 0) +
-    selectedInterests.length
+    selectedInterests.length +
+    (showDeceased ? 1 : 0)
 
   const filteredContacts = contacts.filter((contact) => {
     // Search filter
@@ -73,7 +76,10 @@ export default function PeoplePage() {
     // Category filter
     if (selectedCategories.length > 0) {
       const contactCategory = contact.category
-      if (!contactCategory || !selectedCategories.includes(contactCategory)) {
+      const hasNoCategory = !contactCategory
+      const matchesCategory = contactCategory && selectedCategories.includes(contactCategory)
+      const matchesNoCategory = hasNoCategory && selectedCategories.includes("none")
+      if (!matchesCategory && !matchesNoCategory) {
         return false
       }
     }
@@ -89,6 +95,9 @@ export default function PeoplePage() {
       )
       if (!hasMatchingInterest) return false
     }
+
+    // Deceased filter - hide deceased by default
+    if (!showDeceased && contact.isDeceased) return false
 
     return true
   })
@@ -168,6 +177,16 @@ export default function PeoplePage() {
                       {category}
                     </button>
                   ))}
+                  <button
+                    onClick={() => toggleCategory("none")}
+                    className={`px-3 py-1 text-sm rounded-full border transition-colors ${
+                      selectedCategories.includes("none")
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-background border-border hover:bg-muted"
+                    }`}
+                  >
+                    No Category
+                  </button>
                 </div>
               </div>
 
@@ -195,6 +214,22 @@ export default function PeoplePage() {
                     </button>
                   ))}
                 </div>
+              </div>
+
+              {/* Deceased Filter */}
+              <div>
+                <label className="block text-sm font-medium text-muted-foreground mb-2">
+                  Deceased
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={showDeceased}
+                    onChange={(e) => setShowDeceased(e.target.checked)}
+                    className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
+                  />
+                  <span className="text-sm text-foreground">Show deceased</span>
+                </label>
               </div>
 
               {/* Interests Filter */}
