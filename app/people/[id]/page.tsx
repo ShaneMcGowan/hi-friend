@@ -180,6 +180,16 @@ export default function PersonPage() {
                 </p>
               </div>
             )}
+            {contact.isDeceased && (
+              <div>
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Deceased</p>
+                <p className="text-foreground mt-1">
+                  {contact.deathDate
+                    ? new Date(contact.deathDate).toLocaleDateString()
+                    : "Date unknown"}
+                </p>
+              </div>
+            )}
 
             {/* Parents */}
             {contact.parentIds && contact.parentIds.length > 0 && (

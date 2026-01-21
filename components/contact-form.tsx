@@ -33,6 +33,8 @@ export function ContactForm({
       phone: "",
       address: "",
       birthday: "",
+      isDeceased: false,
+      deathDate: "",
       parentIds: [],
       interests: [],
       importantDates: [],
@@ -219,6 +221,40 @@ export function ContactForm({
             onChange={handleInputChange}
             className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
           />
+        </div>
+        <div>
+          <label className="block text-sm font-semibold text-foreground mb-2">Deceased</label>
+          <div className="flex items-center gap-3">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={formData.isDeceased || false}
+                onChange={(e) => {
+                  setFormData((prev) => ({
+                    ...prev,
+                    isDeceased: e.target.checked,
+                    deathDate: e.target.checked ? prev.deathDate : "",
+                    updatedAt: new Date().toISOString(),
+                  }))
+                }}
+                className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
+              />
+              <span className="text-sm text-foreground">Deceased</span>
+            </label>
+          </div>
+          {formData.isDeceased && (
+            <div className="mt-2">
+              <input
+                type="date"
+                name="deathDate"
+                value={formData.deathDate || ""}
+                onChange={handleInputChange}
+                placeholder="Date of death (optional)"
+                className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
+              />
+              <p className="text-xs text-muted-foreground mt-1">Date is optional</p>
+            </div>
+          )}
         </div>
       </div>
 

@@ -7,6 +7,8 @@ export interface Contact {
   phone?: string
   address?: string
   birthday?: string
+  isDeceased?: boolean
+  deathDate?: string
   parentIds?: string[] // IDs of parent contacts (max 2)
   interests?: string[]
   importantDates?: {
