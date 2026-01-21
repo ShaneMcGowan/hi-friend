@@ -29,13 +29,22 @@ export default function NewContactPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-secondary">
       <main className="max-w-4xl mx-auto px-4 py-8">
-        <Link
-          href="/people"
-          className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-6"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back to People
-        </Link>
+        <div className="flex items-center justify-between mb-6">
+          <Link
+            href="/people"
+            className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to People
+          </Link>
+          <button
+            type="submit"
+            form="contact-form"
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+          >
+            Create Contact
+          </button>
+        </div>
 
         <ContactForm
           contact={null}

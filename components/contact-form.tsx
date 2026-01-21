@@ -14,6 +14,7 @@ interface ContactFormProps {
   relationships?: Relationship[]
   onRelationshipAdd?: (relationship: Relationship) => void
   onRelationshipRemove?: (relationshipId: string) => void
+  formId?: string
 }
 
 export function ContactForm({
@@ -24,6 +25,7 @@ export function ContactForm({
   relationships = [],
   onRelationshipAdd,
   onRelationshipRemove,
+  formId = "contact-form",
 }: ContactFormProps) {
   const [formData, setFormData] = useState<Contact>(
     contact || {
@@ -153,7 +155,7 @@ export function ContactForm({
   )
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-border/40 p-6 shadow-sm space-y-6">
+    <form id={formId} onSubmit={handleSubmit} className="bg-white rounded-xl border border-border/40 p-6 shadow-sm space-y-6">
       <div>
         <h3 className="text-xl font-bold mb-4">{contact ? "Edit Contact" : "New Contact"}</h3>
       </div>
@@ -570,21 +572,6 @@ export function ContactForm({
         />
       </div>
 
-      <div className="flex gap-2 justify-end">
-        <button
-          type="button"
-          onClick={onCancel}
-          className="px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors text-foreground"
-        >
-          Cancel
-        </button>
-        <button
-          type="submit"
-          className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
-        >
-          {contact ? "Update Contact" : "Create Contact"}
-        </button>
-      </div>
     </form>
   )
 }

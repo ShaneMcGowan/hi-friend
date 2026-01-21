@@ -62,38 +62,38 @@ export default function PersonPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-secondary">
       <main className="max-w-4xl mx-auto px-4 py-8">
-        <Link
-          href="/people"
-          className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-6"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back to People
-        </Link>
+        <div className="flex items-center justify-between mb-6">
+          <Link
+            href="/people"
+            className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to People
+          </Link>
+          <div className="flex gap-2">
+            <Link
+              href={`/people/${contact.id}/edit`}
+              className="inline-flex items-center gap-2 px-3 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 transition-colors text-sm"
+            >
+              <Pencil className="w-4 h-4" />
+              Edit
+            </Link>
+            <button
+              onClick={handleDelete}
+              className="inline-flex items-center gap-2 px-3 py-2 bg-destructive text-destructive-foreground rounded-lg hover:bg-destructive/90 transition-colors text-sm"
+            >
+              <Trash2 className="w-4 h-4" />
+              Delete
+            </button>
+          </div>
+        </div>
 
         <div className="bg-white rounded-xl border border-border/40 p-6 shadow-sm">
-          <div className="flex items-start justify-between mb-6">
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">{getDisplayName(contact)}</h1>
-              {contact.category && (
-                <p className="text-sm text-muted-foreground mt-1">{contact.category}</p>
-              )}
-            </div>
-            <div className="flex gap-2">
-              <Link
-                href={`/people/${contact.id}/edit`}
-                className="inline-flex items-center gap-2 px-3 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 transition-colors text-sm"
-              >
-                <Pencil className="w-4 h-4" />
-                Edit
-              </Link>
-              <button
-                onClick={handleDelete}
-                className="inline-flex items-center gap-2 px-3 py-2 bg-destructive text-destructive-foreground rounded-lg hover:bg-destructive/90 transition-colors text-sm"
-              >
-                <Trash2 className="w-4 h-4" />
-                Delete
-              </button>
-            </div>
+          <div className="mb-6">
+            <h1 className="text-2xl font-bold text-foreground">{getDisplayName(contact)}</h1>
+            {contact.category && (
+              <p className="text-sm text-muted-foreground mt-1">{contact.category}</p>
+            )}
           </div>
 
           <div className="space-y-6">
