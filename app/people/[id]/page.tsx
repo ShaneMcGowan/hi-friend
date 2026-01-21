@@ -7,6 +7,17 @@ import Link from "next/link"
 import { useContactsData } from "@/hooks/use-contacts-data"
 import { FamilyGraph } from "@/lib/family-graph"
 import { getDisplayName } from "@/lib/utils"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 export default function PersonPage() {
   const params = useParams()
@@ -78,13 +89,31 @@ export default function PersonPage() {
               <Pencil className="w-4 h-4" />
               Edit
             </Link>
-            <button
-              onClick={handleDelete}
-              className="inline-flex items-center gap-2 px-3 py-2 bg-destructive text-destructive-foreground rounded-lg hover:bg-destructive/90 transition-colors text-sm"
-            >
-              <Trash2 className="w-4 h-4" />
-              Delete
-            </button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <button className="inline-flex items-center gap-2 px-3 py-2 bg-destructive text-destructive-foreground rounded-lg hover:bg-destructive/90 transition-colors text-sm">
+                  <Trash2 className="w-4 h-4" />
+                  Delete
+                </button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete Contact</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Are you sure you want to delete <strong>{getDisplayName(contact)}</strong>? This action cannot be undone and will remove all associated relationships and data.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={handleDelete}
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  >
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </div>
 
