@@ -2,11 +2,12 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { useRef, type ChangeEvent } from "react"
+import { useRef, useCallback, type ChangeEvent } from "react"
 import { Users, Network, Bell, LayoutDashboard, PanelLeftClose, PanelLeft, Download, Upload } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useSidebar } from "./sidebar-context"
 import { useContactsData } from "@/hooks/use-contacts-data"
+import type { Contact, Relationship } from "@/lib/types"
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -21,10 +22,45 @@ export function Sidebar() {
   const { contacts, relationships, importData } = useContactsData()
   const jsonInputRef = useRef<HTMLInputElement>(null)
 
-  const handleExport = () => {
+  const handleExport = useCallback(() => {
+    // Always read fresh data from localStorage to ensure we get the latest values
+    // This prevents stale data issues when the component hasn't re-rendered
+    const savedContacts = localStorage.getItem("crm-contacts")
+    const savedRelationships = localStorage.getItem("crm-relationships")
+    
+    let currentContacts: Contact[] = []
+    let currentRelationships: Relationship[] = []
+    
+    if (savedContacts) {
+      try {
+        const parsed = JSON.parse(savedContacts)
+        currentContacts = Array.isArray(parsed) ? parsed : []
+      } catch (e) {
+        console.error("Failed to parse contacts for export:", e)
+        // Fallback to hook state if localStorage parse fails
+        currentContacts = contacts
+      }
+    } else {
+      // Fallback to hook state if localStorage is empty
+      currentContacts = contacts
+    }
+    
+    if (savedRelationships) {
+      try {
+        currentRelationships = JSON.parse(savedRelationships)
+      } catch (e) {
+        console.error("Failed to parse relationships for export:", e)
+        // Fallback to hook state if localStorage parse fails
+        currentRelationships = relationships
+      }
+    } else {
+      // Fallback to hook state if localStorage is empty
+      currentRelationships = relationships
+    }
+    
     const exportData = {
-      contacts,
-      relationships,
+      contacts: currentContacts,
+      relationships: currentRelationships,
       exportedAt: new Date().toISOString(),
     }
     const dataStr = JSON.stringify(exportData, null, 2)
@@ -37,7 +73,7 @@ export function Sidebar() {
     link.click()
     document.body.removeChild(link)
     URL.revokeObjectURL(url)
-  }
+  }, [contacts, relationships])
 
   const handleJsonImport = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
