@@ -4,6 +4,7 @@ import type React from "react"
 
 import { useState } from "react"
 import type { Contact, Relationship } from "@/lib/types"
+import { getDisplayName } from "@/lib/utils"
 
 interface ContactFormProps {
   contact?: Contact | null
@@ -27,7 +28,12 @@ export function ContactForm({
   const [formData, setFormData] = useState<Contact>(
     contact || {
       id: Math.random().toString(36).substring(7),
-      name: "",
+      familyName: "",
+      givenName: "",
+      additionalNames: "",
+      honorificPrefixes: "",
+      honorificSuffixes: "",
+      maidenName: "",
       category: undefined,
       email: "",
       phone: "",
@@ -132,8 +138,9 @@ export function ContactForm({
     onSave(formData)
   }
 
-  const getContactName = (id: string) => {
-    return allContacts.find((c) => c.id === id)?.name || "Unknown"
+  const getContactNameById = (id: string) => {
+    const c = allContacts.find((c) => c.id === id)
+    return c ? getDisplayName(c) : "Unknown"
   }
 
   const contactRelationships = relationships.filter(
@@ -151,16 +158,71 @@ export function ContactForm({
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Structured Name (vCard N field) */}
         <div>
-          <label className="block text-sm font-semibold text-foreground mb-2">Name *</label>
+          <label className="block text-sm font-semibold text-foreground mb-2">Prefix</label>
           <input
             type="text"
-            name="name"
-            value={formData.name}
+            name="honorificPrefixes"
+            value={formData.honorificPrefixes || ""}
             onChange={handleInputChange}
-            required
             className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
-            placeholder="Full name"
+            placeholder="Mr., Mrs., Dr."
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-semibold text-foreground mb-2">Given Name</label>
+          <input
+            type="text"
+            name="givenName"
+            value={formData.givenName || ""}
+            onChange={handleInputChange}
+            className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
+            placeholder="First name"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-semibold text-foreground mb-2">Middle Names</label>
+          <input
+            type="text"
+            name="additionalNames"
+            value={formData.additionalNames || ""}
+            onChange={handleInputChange}
+            className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
+            placeholder="Middle name(s)"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-semibold text-foreground mb-2">Family Name</label>
+          <input
+            type="text"
+            name="familyName"
+            value={formData.familyName || ""}
+            onChange={handleInputChange}
+            className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
+            placeholder="Last name / Surname"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-semibold text-foreground mb-2">Maiden Name</label>
+          <input
+            type="text"
+            name="maidenName"
+            value={formData.maidenName || ""}
+            onChange={handleInputChange}
+            className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
+            placeholder="Birth surname"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-semibold text-foreground mb-2">Suffix</label>
+          <input
+            type="text"
+            name="honorificSuffixes"
+            value={formData.honorificSuffixes || ""}
+            onChange={handleInputChange}
+            className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
+            placeholder="Jr., III, PhD"
           />
         </div>
         <div>
@@ -283,7 +345,7 @@ export function ContactForm({
                 .filter((c) => c.id !== formData.id && !formData.parentIds?.includes(c.id))
                 .map((c) => (
                   <option key={c.id} value={c.id}>
-                    {c.name}
+                    {getDisplayName(c)}
                   </option>
                 ))}
             </select>
@@ -294,7 +356,7 @@ export function ContactForm({
             const parent = allContacts.find((c) => c.id === parentId)
             return (
               <div key={parentId} className="flex justify-between items-center py-2 px-3 bg-muted rounded-lg">
-                <span className="text-foreground">{parent?.name || "Unknown Contact"}</span>
+                <span className="text-foreground">{parent ? getDisplayName(parent) : "Unknown Contact"}</span>
                 <button
                   type="button"
                   onClick={() => {
@@ -407,19 +469,19 @@ export function ContactForm({
                 <option value="">Select a contact</option>
                 {availableContacts.map((c) => (
                   <option key={c.id} value={c.id}>
-                    {c.name}
+                    {getDisplayName(c)}
                   </option>
                 ))}
               </select>
             </div>
-            {relationshipContactId && (
+            {relationshipContactId && contact && (
               <div>
                 <label className="text-xs text-muted-foreground mb-1 block">
-                  <span className="font-semibold text-foreground">{contact.name}</span> is the{" "}
+                  <span className="font-semibold text-foreground">{getDisplayName(contact)}</span> is the{" "}
                   <span className="font-semibold text-foreground">
                     {relationshipType1To2 || "[relationship]"}
                   </span>{" "}
-                  of <span className="font-semibold text-foreground">{getContactName(relationshipContactId)}</span>
+                  of <span className="font-semibold text-foreground">{getContactNameById(relationshipContactId)}</span>
                 </label>
                 <select
                   value={relationshipType1To2}
@@ -435,7 +497,7 @@ export function ContactForm({
                 </select>
                 {relationshipType1To2 && (
                   <p className="text-xs text-muted-foreground mt-1 italic">
-                    {getContactName(relationshipContactId)} is your {getOppositeRelationship(relationshipType1To2).toLowerCase()}
+                    {getContactNameById(relationshipContactId)} is your {getOppositeRelationship(relationshipType1To2).toLowerCase()}
                   </p>
                 )}
               </div>
@@ -460,7 +522,7 @@ export function ContactForm({
                 return (
                   <div key={rel.id} className="flex justify-between items-center py-2 px-3 bg-muted rounded-lg">
                     <span className="text-foreground text-sm">
-                      <span className="font-semibold">{getContactName(otherContactId)}</span> ({relationshipText})
+                      <span className="font-semibold">{getContactNameById(otherContactId)}</span> ({relationshipText})
                     </span>
                     <button
                       type="button"

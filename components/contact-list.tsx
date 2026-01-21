@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import type { Contact } from "@/lib/types"
+import { getDisplayName } from "@/lib/utils"
 
 interface ContactListProps {
   contacts: Contact[]
@@ -52,7 +53,7 @@ export function ContactList({
             >
               <div className="flex items-start justify-between gap-2">
                 <div className="flex-1 min-w-0">
-                  <h4 className="font-semibold text-foreground truncate">{contact.name}</h4>
+                  <h4 className="font-semibold text-foreground truncate">{getDisplayName(contact)}</h4>
                   {contact.category && (
                     <span
                       className={`inline-block text-xs px-2 py-1 rounded mt-1 ${categoryColors[contact.category] || "bg-gray-100 text-gray-700"}`}

@@ -7,6 +7,7 @@ import { ContactList } from "@/components/contact-list"
 import { VcfImport } from "@/components/vcf-import"
 import { useContactsData } from "@/hooks/use-contacts-data"
 import { CATEGORIES, type Category } from "@/lib/types"
+import { getDisplayName } from "@/lib/utils"
 
 export default function PeoplePage() {
   const router = useRouter()
@@ -66,8 +67,9 @@ export default function PeoplePage() {
 
   const filteredContacts = contacts.filter((contact) => {
     // Search filter
+    const displayName = getDisplayName(contact)
     const matchesSearch =
-      contact.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      displayName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       contact.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       contact.interests?.some((i) => i.toLowerCase().includes(searchTerm.toLowerCase()))
 

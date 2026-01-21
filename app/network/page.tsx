@@ -6,6 +6,7 @@ import { RelationshipGraph } from "@/components/relationship-graph"
 import { ContactForm } from "@/components/contact-form"
 import { useContactsData } from "@/hooks/use-contacts-data"
 import type { Contact } from "@/lib/types"
+import { getDisplayName } from "@/lib/utils"
 
 export default function NetworkPage() {
   const {
@@ -72,7 +73,7 @@ export default function NetworkPage() {
             <div className="bg-white rounded-xl border border-border/40 p-6 shadow-sm">
               <div className="flex items-start justify-between mb-6">
                 <div>
-                  <h2 className="text-2xl font-bold text-foreground">{selectedContact.name}</h2>
+                  <h2 className="text-2xl font-bold text-foreground">{getDisplayName(selectedContact)}</h2>
                   {selectedContact.category && (
                     <p className="text-sm text-muted-foreground mt-1">{selectedContact.category}</p>
                   )}
@@ -124,7 +125,7 @@ export default function NetworkPage() {
                             onClick={() => setSelectedContact(relatedContact || null)}
                           >
                             <div>
-                              <span className="text-foreground font-semibold">{relatedContact?.name}</span>
+                              <span className="text-foreground font-semibold">{relatedContact ? getDisplayName(relatedContact) : 'Unknown'}</span>
                               <span className="text-muted-foreground"> ({relationshipText})</span>
                             </div>
                             <span className="text-xs text-muted-foreground">Click to view</span>

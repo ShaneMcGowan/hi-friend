@@ -1,6 +1,12 @@
 export interface Contact {
   id: string
-  name: string
+  // vCard v4 "N" field components (structured name)
+  familyName?: string // Surname / Last name
+  givenName?: string // First name
+  additionalNames?: string // Middle names
+  honorificPrefixes?: string // e.g., "Mr.", "Mrs.", "Dr."
+  honorificSuffixes?: string // e.g., "Jr.", "III", "PhD"
+  maidenName?: string // Birth surname before marriage
   category?: Category
   categories?: string[]
   email?: string

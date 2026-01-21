@@ -6,6 +6,7 @@ import { ArrowLeft, Pencil, Trash2 } from "lucide-react"
 import Link from "next/link"
 import { useContactsData } from "@/hooks/use-contacts-data"
 import { FamilyGraph } from "@/lib/family-graph"
+import { getDisplayName } from "@/lib/utils"
 
 export default function PersonPage() {
   const params = useParams()
@@ -72,7 +73,7 @@ export default function PersonPage() {
         <div className="bg-white rounded-xl border border-border/40 p-6 shadow-sm">
           <div className="flex items-start justify-between mb-6">
             <div>
-              <h1 className="text-2xl font-bold text-foreground">{contact.name}</h1>
+              <h1 className="text-2xl font-bold text-foreground">{getDisplayName(contact)}</h1>
               {contact.category && (
                 <p className="text-sm text-muted-foreground mt-1">{contact.category}</p>
               )}
@@ -96,6 +97,51 @@ export default function PersonPage() {
           </div>
 
           <div className="space-y-6">
+            {/* Structured Name */}
+            {(contact.givenName || contact.familyName || contact.additionalNames || contact.honorificPrefixes || contact.honorificSuffixes || contact.maidenName) && (
+              <div>
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Name Details</p>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
+                  {contact.honorificPrefixes && (
+                    <div>
+                      <span className="text-muted-foreground">Prefix: </span>
+                      <span className="text-foreground">{contact.honorificPrefixes}</span>
+                    </div>
+                  )}
+                  {contact.givenName && (
+                    <div>
+                      <span className="text-muted-foreground">Given: </span>
+                      <span className="text-foreground">{contact.givenName}</span>
+                    </div>
+                  )}
+                  {contact.additionalNames && (
+                    <div>
+                      <span className="text-muted-foreground">Middle: </span>
+                      <span className="text-foreground">{contact.additionalNames}</span>
+                    </div>
+                  )}
+                  {contact.familyName && (
+                    <div>
+                      <span className="text-muted-foreground">Family: </span>
+                      <span className="text-foreground">{contact.familyName}</span>
+                    </div>
+                  )}
+                  {contact.maidenName && (
+                    <div>
+                      <span className="text-muted-foreground">Maiden: </span>
+                      <span className="text-foreground">{contact.maidenName}</span>
+                    </div>
+                  )}
+                  {contact.honorificSuffixes && (
+                    <div>
+                      <span className="text-muted-foreground">Suffix: </span>
+                      <span className="text-foreground">{contact.honorificSuffixes}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* Contact Info */}
             {contact.phone && (
               <div>
@@ -147,7 +193,7 @@ export default function PersonPage() {
                       href={`/people/${parent.id}`}
                       className="flex justify-between items-center py-2 px-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors"
                     >
-                      <span className="text-foreground font-semibold">{parent.name}</span>
+                      <span className="text-foreground font-semibold">{getDisplayName(parent)}</span>
                       <span className="text-xs text-muted-foreground">Click to view</span>
                     </Link>
                   ))}
@@ -168,7 +214,7 @@ export default function PersonPage() {
                       href={`/people/${sibling.id}`}
                       className="flex justify-between items-center py-2 px-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors"
                     >
-                      <span className="text-foreground font-semibold">{sibling.name}</span>
+                      <span className="text-foreground font-semibold">{getDisplayName(sibling)}</span>
                       <span className="text-xs text-muted-foreground">Click to view</span>
                     </Link>
                   ))}
@@ -189,7 +235,7 @@ export default function PersonPage() {
                       href={`/people/${child.id}`}
                       className="flex justify-between items-center py-2 px-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors"
                     >
-                      <span className="text-foreground font-semibold">{child.name}</span>
+                      <span className="text-foreground font-semibold">{getDisplayName(child)}</span>
                       <span className="text-xs text-muted-foreground">Click to view</span>
                     </Link>
                   ))}
@@ -211,7 +257,7 @@ export default function PersonPage() {
                       className="flex justify-between items-center py-2 px-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors"
                     >
                       <div>
-                        <span className="text-foreground font-semibold">{ef.contact.name}</span>
+                        <span className="text-foreground font-semibold">{getDisplayName(ef.contact)}</span>
                         <span className="text-muted-foreground"> ({ef.relation})</span>
                       </div>
                       <span className="text-xs text-muted-foreground">Click to view</span>
@@ -240,7 +286,7 @@ export default function PersonPage() {
                         className="flex justify-between items-center py-2 px-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors"
                       >
                         <div>
-                          <span className="text-foreground font-semibold">{relatedContact?.name}</span>
+                          <span className="text-foreground font-semibold">{relatedContact ? getDisplayName(relatedContact) : 'Unknown'}</span>
                           <span className="text-muted-foreground"> ({relationshipText})</span>
                         </div>
                         <span className="text-xs text-muted-foreground">Click to view</span>

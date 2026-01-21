@@ -5,6 +5,7 @@ import type React from "react"
 import { useEffect, useRef, useMemo } from "react"
 import type { Contact, Relationship } from "@/lib/types"
 import { FamilyGraph } from "@/lib/family-graph"
+import { getDisplayName } from "@/lib/utils"
 
 interface RelationshipGraphProps {
   contacts: Contact[]
@@ -124,17 +125,20 @@ export function RelationshipGraph({
       ctx.font = "bold 14px sans-serif"
       ctx.textAlign = "center"
       ctx.textBaseline = "middle"
-      const initials = contact.name
+      const displayName = getDisplayName(contact)
+      const initials = displayName
         .split(" ")
         .map((n) => n[0])
+        .filter((c) => c && c !== '(')
         .join("")
         .toUpperCase()
+        .slice(0, 3)
       ctx.fillText(initials, pos.x, pos.y)
 
       // Draw name below
       ctx.font = "12px sans-serif"
       ctx.fillStyle = "#1f2937"
-      const nameTruncated = contact.name.length > 12 ? contact.name.substring(0, 12) + "..." : contact.name
+      const nameTruncated = displayName.length > 12 ? displayName.substring(0, 12) + "..." : displayName
       ctx.fillText(nameTruncated, pos.x, pos.y + nodeRadius + 18)
     })
   }, [contacts, relationships, selectedContact, familyEdges])

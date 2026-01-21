@@ -2,6 +2,7 @@
 
 import { useMemo } from "react"
 import { type Contact, type Category, CATEGORIES } from "@/lib/types"
+import { getDisplayName } from "@/lib/utils"
 
 interface UpcomingRemindersProps {
   contacts: Contact[]
@@ -127,7 +128,7 @@ export function UpcomingReminders({ contacts }: UpcomingRemindersProps) {
                     className="flex flex-col p-4 bg-gradient-to-r from-accent/50 to-transparent rounded-lg border border-accent/20"
                   >
                     <div className="mb-2">
-                      <p className="font-semibold text-foreground">{reminder.contact.name}</p>
+                      <p className="font-semibold text-foreground">{getDisplayName(reminder.contact)}</p>
                       <p className="text-xs text-muted-foreground mt-1">{reminder.label}</p>
                     </div>
                     <div className="flex items-center justify-between mt-auto">

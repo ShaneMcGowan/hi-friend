@@ -159,20 +159,19 @@ function decodeVCardValue(value: string): string {
  * Convert parsed vCard data to a Contact object
  */
 function vcardToContact(data: VCardData): Contact | null {
-  // Determine the name
-  let name = data.fn
-  if (!name && data.n) {
-    const nameParts = [data.n.prefix, data.n.given, data.n.middle, data.n.family, data.n.suffix].filter(Boolean)
-    name = nameParts.join(" ")
-  }
-
-  if (!name) return null
+  // Need at least FN or N field to create a contact
+  if (!data.fn && !data.n) return null
 
   const now = new Date().toISOString()
 
   return {
     id: generateId(),
-    name,
+    // Map vCard N field to structured name fields
+    honorificPrefixes: data.n?.prefix,
+    givenName: data.n?.given,
+    additionalNames: data.n?.middle,
+    familyName: data.n?.family,
+    honorificSuffixes: data.n?.suffix,
     email: data.email?.[0],
     phone: data.tel?.[0],
     address: data.adr,

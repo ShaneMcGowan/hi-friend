@@ -6,6 +6,7 @@ import Link from "next/link"
 import { ContactForm } from "@/components/contact-form"
 import { useContactsData } from "@/hooks/use-contacts-data"
 import type { Contact } from "@/lib/types"
+import { getDisplayName } from "@/lib/utils"
 
 export default function EditPersonPage() {
   const params = useParams()
@@ -58,7 +59,7 @@ export default function EditPersonPage() {
           className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-6"
         >
           <ArrowLeft className="w-4 h-4" />
-          Back to {contact.name}
+          Back to {getDisplayName(contact)}
         </Link>
 
         <ContactForm
