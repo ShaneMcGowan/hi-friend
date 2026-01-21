@@ -18,6 +18,12 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+} from "@/components/ui/card"
 
 export default function PersonPage() {
   const params = useParams()
@@ -170,48 +176,6 @@ export default function PersonPage() {
                 </div>
               </div>
             )}
-
-            {/* Contact Info */}
-            {contact.phones && contact.phones.length > 0 && (
-              <div>
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Phone Numbers</p>
-                <div className="space-y-2">
-                  {contact.phones.map((phone, idx) => (
-                    <div key={idx} className="py-2 px-3 bg-muted rounded-lg">
-                      <span className="text-sm font-semibold text-foreground">{phone.label}:</span>
-                      <p className="text-foreground mt-1">{phone.value}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-            {/* Legacy support for old phone field */}
-            {(!contact.phones || contact.phones.length === 0) && contact.phone && (
-              <div>
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Phone</p>
-                <p className="text-foreground mt-1">{contact.phone}</p>
-              </div>
-            )}
-            {contact.emails && contact.emails.length > 0 && (
-              <div>
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Email Addresses</p>
-                <div className="space-y-2">
-                  {contact.emails.map((email, idx) => (
-                    <div key={idx} className="py-2 px-3 bg-muted rounded-lg">
-                      <span className="text-sm font-semibold text-foreground">{email.label}:</span>
-                      <p className="text-foreground mt-1">{email.value}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-            {/* Legacy support for old email field */}
-            {(!contact.emails || contact.emails.length === 0) && contact.email && (
-              <div>
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Email</p>
-                <p className="text-foreground mt-1">{contact.email}</p>
-              </div>
-            )}
             {contact.address && (
               <div>
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Address</p>
@@ -234,93 +198,6 @@ export default function PersonPage() {
                     ? new Date(contact.deathDate).toLocaleDateString()
                     : "Date unknown"}
                 </p>
-              </div>
-            )}
-
-            {/* Parents */}
-            {parents.length > 0 && (
-              <div>
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
-                  Parents
-                </p>
-                <div className="space-y-2">
-                  {parents.map((parent) => (
-                    <Link
-                      key={parent.id}
-                      href={`/people/${parent.id}`}
-                      className="flex justify-between items-center py-2 px-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors"
-                    >
-                      <span className="text-foreground font-semibold">{getDisplayName(parent)}</span>
-                      <span className="text-xs text-muted-foreground">Click to view</span>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Siblings */}
-            {siblings.length > 0 && (
-              <div>
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
-                  Siblings
-                </p>
-                <div className="space-y-2">
-                  {siblings.map((sibling) => (
-                    <Link
-                      key={sibling.id}
-                      href={`/people/${sibling.id}`}
-                      className="flex justify-between items-center py-2 px-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors"
-                    >
-                      <span className="text-foreground font-semibold">{getDisplayName(sibling)}</span>
-                      <span className="text-xs text-muted-foreground">Click to view</span>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Children */}
-            {children.length > 0 && (
-              <div>
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
-                  Children
-                </p>
-                <div className="space-y-2">
-                  {children.map((child) => (
-                    <Link
-                      key={child.id}
-                      href={`/people/${child.id}`}
-                      className="flex justify-between items-center py-2 px-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors"
-                    >
-                      <span className="text-foreground font-semibold">{getDisplayName(child)}</span>
-                      <span className="text-xs text-muted-foreground">Click to view</span>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Extended Family */}
-            {extendedFamily.length > 0 && (
-              <div>
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
-                  Family
-                </p>
-                <div className="space-y-2">
-                  {extendedFamily.map((ef) => (
-                    <Link
-                      key={ef.contact.id}
-                      href={`/people/${ef.contact.id}`}
-                      className="flex justify-between items-center py-2 px-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors"
-                    >
-                      <div>
-                        <span className="text-foreground font-semibold">{getDisplayName(ef.contact)}</span>
-                        <span className="text-muted-foreground"> ({ef.relation})</span>
-                      </div>
-                      <span className="text-xs text-muted-foreground">Click to view</span>
-                    </Link>
-                  ))}
-                </div>
               </div>
             )}
 
@@ -400,6 +277,141 @@ export default function PersonPage() {
             )}
           </div>
         </div>
+
+        {/* Family */}
+        {(parents.length > 0 || siblings.length > 0 || children.length > 0 || extendedFamily.length > 0) && (
+          <Card className="mt-6">
+            <CardHeader>
+              <CardTitle>Family</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Parents */}
+              {parents.length > 0 && (
+                <div>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                    Parents
+                  </p>
+                  <div className="space-y-2">
+                    {parents.map((parent) => (
+                      <Link
+                        key={parent.id}
+                        href={`/people/${parent.id}`}
+                        className="flex justify-between items-center py-2 px-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors"
+                      >
+                        <span className="text-foreground font-semibold">{getDisplayName(parent)}</span>
+                        <span className="text-xs text-muted-foreground">Click to view</span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Siblings */}
+              {siblings.length > 0 && (
+                <div>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                    Siblings
+                  </p>
+                  <div className="space-y-2">
+                    {siblings.map((sibling) => (
+                      <Link
+                        key={sibling.id}
+                        href={`/people/${sibling.id}`}
+                        className="flex justify-between items-center py-2 px-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors"
+                      >
+                        <span className="text-foreground font-semibold">{getDisplayName(sibling)}</span>
+                        <span className="text-xs text-muted-foreground">Click to view</span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Children */}
+              {children.length > 0 && (
+                <div>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                    Children
+                  </p>
+                  <div className="space-y-2">
+                    {children.map((child) => (
+                      <Link
+                        key={child.id}
+                        href={`/people/${child.id}`}
+                        className="flex justify-between items-center py-2 px-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors"
+                      >
+                        <span className="text-foreground font-semibold">{getDisplayName(child)}</span>
+                        <span className="text-xs text-muted-foreground">Click to view</span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Extended Family */}
+              {extendedFamily.length > 0 && (
+                <div>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                    Extended Family
+                  </p>
+                  <div className="space-y-2">
+                    {extendedFamily.map((ef) => (
+                      <Link
+                        key={ef.contact.id}
+                        href={`/people/${ef.contact.id}`}
+                        className="flex justify-between items-center py-2 px-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors"
+                      >
+                        <div>
+                          <span className="text-foreground font-semibold">{getDisplayName(ef.contact)}</span>
+                          <span className="text-muted-foreground"> ({ef.relation})</span>
+                        </div>
+                        <span className="text-xs text-muted-foreground">Click to view</span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Contact Info */}
+        {((contact.phones && contact.phones.length > 0) || 
+          (contact.emails && contact.emails.length > 0)) && (
+          <Card className="mt-6">
+            <CardHeader>
+              <CardTitle>Contact Info</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {contact.phones && contact.phones.length > 0 && (
+                <div>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Phone Numbers</p>
+                  <div className="space-y-2">
+                    {contact.phones.map((phone, idx) => (
+                      <div key={idx} className="py-2 px-3 bg-muted rounded-lg">
+                        <span className="text-sm font-semibold text-foreground">{phone.label}:</span>
+                        <p className="text-foreground mt-1">{phone.value}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {contact.emails && contact.emails.length > 0 && (
+                <div>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Email Addresses</p>
+                  <div className="space-y-2">
+                    {contact.emails.map((email, idx) => (
+                      <div key={idx} className="py-2 px-3 bg-muted rounded-lg">
+                        <span className="text-sm font-semibold text-foreground">{email.label}:</span>
+                        <p className="text-foreground mt-1">{email.value}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
       </main>
     </div>
   )
