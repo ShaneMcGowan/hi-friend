@@ -1,6 +1,8 @@
 "use client"
 
 import { useRouter } from "next/navigation"
+import { ArrowLeft } from "lucide-react"
+import Link from "next/link"
 import { ContactForm } from "@/components/contact-form"
 import { useContactsData } from "@/hooks/use-contacts-data"
 import type { Contact } from "@/lib/types"
@@ -27,6 +29,14 @@ export default function NewContactPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-secondary">
       <main className="max-w-4xl mx-auto px-4 py-8">
+        <Link
+          href="/people"
+          className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-6"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to People
+        </Link>
+
         <ContactForm
           contact={null}
           onSave={handleSave}

@@ -55,6 +55,7 @@ export function ContactForm({
   const [dateValue, setDateValue] = useState("")
   const [relationshipContactId, setRelationshipContactId] = useState("")
   const [relationshipType1To2, setRelationshipType1To2] = useState("")
+  const [showMoreNameFields, setShowMoreNameFields] = useState(false)
 
   // Helper function to infer opposite relationship
   const getOppositeRelationship = (relationshipType: string): string => {
@@ -158,18 +159,7 @@ export function ContactForm({
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Structured Name (vCard N field) */}
-        <div>
-          <label className="block text-sm font-semibold text-foreground mb-2">Prefix</label>
-          <input
-            type="text"
-            name="honorificPrefixes"
-            value={formData.honorificPrefixes || ""}
-            onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
-            placeholder="Mr., Mrs., Dr."
-          />
-        </div>
+        {/* Primary Name Fields */}
         <div>
           <label className="block text-sm font-semibold text-foreground mb-2">Given Name</label>
           <input
@@ -179,17 +169,6 @@ export function ContactForm({
             onChange={handleInputChange}
             className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
             placeholder="First name"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-semibold text-foreground mb-2">Middle Names</label>
-          <input
-            type="text"
-            name="additionalNames"
-            value={formData.additionalNames || ""}
-            onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
-            placeholder="Middle name(s)"
           />
         </div>
         <div>
@@ -203,28 +182,67 @@ export function ContactForm({
             placeholder="Last name / Surname"
           />
         </div>
-        <div>
-          <label className="block text-sm font-semibold text-foreground mb-2">Maiden Name</label>
-          <input
-            type="text"
-            name="maidenName"
-            value={formData.maidenName || ""}
-            onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
-            placeholder="Birth surname"
-          />
+
+        {/* Collapsible Additional Name Fields */}
+        <div className="md:col-span-2">
+          <button
+            type="button"
+            onClick={() => setShowMoreNameFields(!showMoreNameFields)}
+            className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1 mb-2"
+          >
+            <span className="text-xs">{showMoreNameFields ? "▼" : "▶"}</span>
+            {showMoreNameFields ? "Hide" : "Show"} additional name fields (prefix, middle, suffix, maiden)
+          </button>
+          {showMoreNameFields && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-4 border-l-2 border-border/50">
+              <div>
+                <label className="block text-sm font-semibold text-foreground mb-2">Prefix</label>
+                <input
+                  type="text"
+                  name="honorificPrefixes"
+                  value={formData.honorificPrefixes || ""}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
+                  placeholder="Mr., Mrs., Dr."
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-foreground mb-2">Middle Names</label>
+                <input
+                  type="text"
+                  name="additionalNames"
+                  value={formData.additionalNames || ""}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
+                  placeholder="Middle name(s)"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-foreground mb-2">Maiden Name</label>
+                <input
+                  type="text"
+                  name="maidenName"
+                  value={formData.maidenName || ""}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
+                  placeholder="Birth surname"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-foreground mb-2">Suffix</label>
+                <input
+                  type="text"
+                  name="honorificSuffixes"
+                  value={formData.honorificSuffixes || ""}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
+                  placeholder="Jr., III, PhD"
+                />
+              </div>
+            </div>
+          )}
         </div>
-        <div>
-          <label className="block text-sm font-semibold text-foreground mb-2">Suffix</label>
-          <input
-            type="text"
-            name="honorificSuffixes"
-            value={formData.honorificSuffixes || ""}
-            onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
-            placeholder="Jr., III, PhD"
-          />
-        </div>
+
         <div>
           <label className="block text-sm font-semibold text-foreground mb-2">Category</label>
           <select
