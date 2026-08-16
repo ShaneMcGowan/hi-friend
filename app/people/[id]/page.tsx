@@ -1,12 +1,12 @@
 "use client"
 
-import { useMemo } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { ArrowLeft, Pencil, Trash2 } from "lucide-react"
 import Link from "next/link"
 import { useContactsData } from "@/hooks/use-contacts-data"
-import { FamilyGraph } from "@/lib/family-graph"
 import { getDisplayName } from "@/lib/utils"
+import { FamilyCard } from "@/components/family-card"
+import { RelationshipsCard } from "@/components/relationships-card"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -37,18 +37,6 @@ export default function PersonPage() {
   } = useContactsData()
 
   const contact = contacts.find((c) => c.id === id)
-
-  const contactRelationships = contact
-    ? relationships.filter((r) => r.contactId1 === contact.id || r.contactId2 === contact.id)
-    : []
-
-  // Build family graph and infer relationships
-  const familyGraph = useMemo(() => new FamilyGraph(contacts), [contacts])
-
-  const parents = contact ? familyGraph.getParents(contact.id) : []
-  const children = contact ? familyGraph.getChildren(contact.id) : []
-  const siblings = contact ? familyGraph.getAllSiblings(contact.id) : []
-  const extendedFamily = contact ? familyGraph.getExtendedFamily(contact.id) : []
 
   const handleDelete = () => {
     if (contact) {
@@ -201,36 +189,6 @@ export default function PersonPage() {
               </div>
             )}
 
-            {/* Relationships */}
-            {contactRelationships.length > 0 && (
-              <div>
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
-                  Relationships
-                </p>
-                <div className="space-y-2">
-                  {contactRelationships.map((rel) => {
-                    const otherContactId =
-                      rel.contactId1 === contact.id ? rel.contactId2 : rel.contactId1
-                    const relationshipText = rel.contactId1 === contact.id ? rel.type1To2 : rel.type2To1
-                    const relatedContact = contacts.find((c) => c.id === otherContactId)
-                    return (
-                      <Link
-                        key={rel.id}
-                        href={`/people/${otherContactId}`}
-                        className="flex justify-between items-center py-2 px-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors"
-                      >
-                        <div>
-                          <span className="text-foreground font-semibold">{relatedContact ? getDisplayName(relatedContact) : 'Unknown'}</span>
-                          <span className="text-muted-foreground"> ({relationshipText})</span>
-                        </div>
-                        <span className="text-xs text-muted-foreground">Click to view</span>
-                      </Link>
-                    )
-                  })}
-                </div>
-              </div>
-            )}
-
             {/* Interests */}
             {contact.interests && contact.interests.length > 0 && (
               <div>
@@ -278,102 +236,14 @@ export default function PersonPage() {
           </div>
         </div>
 
-        {/* Family */}
-        {(parents.length > 0 || siblings.length > 0 || children.length > 0 || extendedFamily.length > 0) && (
-          <Card className="mt-6">
-            <CardHeader>
-              <CardTitle>Family</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Parents */}
-              {parents.length > 0 && (
-                <div>
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
-                    Parents
-                  </p>
-                  <div className="space-y-2">
-                    {parents.map((parent) => (
-                      <Link
-                        key={parent.id}
-                        href={`/people/${parent.id}`}
-                        className="flex justify-between items-center py-2 px-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors"
-                      >
-                        <span className="text-foreground font-semibold">{getDisplayName(parent)}</span>
-                        <span className="text-xs text-muted-foreground">Click to view</span>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              )}
+        <FamilyCard contact={contact} contacts={contacts} className="mt-6" />
 
-              {/* Siblings */}
-              {siblings.length > 0 && (
-                <div>
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
-                    Siblings
-                  </p>
-                  <div className="space-y-2">
-                    {siblings.map((sibling) => (
-                      <Link
-                        key={sibling.id}
-                        href={`/people/${sibling.id}`}
-                        className="flex justify-between items-center py-2 px-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors"
-                      >
-                        <span className="text-foreground font-semibold">{getDisplayName(sibling)}</span>
-                        <span className="text-xs text-muted-foreground">Click to view</span>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Children */}
-              {children.length > 0 && (
-                <div>
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
-                    Children
-                  </p>
-                  <div className="space-y-2">
-                    {children.map((child) => (
-                      <Link
-                        key={child.id}
-                        href={`/people/${child.id}`}
-                        className="flex justify-between items-center py-2 px-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors"
-                      >
-                        <span className="text-foreground font-semibold">{getDisplayName(child)}</span>
-                        <span className="text-xs text-muted-foreground">Click to view</span>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Extended Family */}
-              {extendedFamily.length > 0 && (
-                <div>
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
-                    Extended Family
-                  </p>
-                  <div className="space-y-2">
-                    {extendedFamily.map((ef) => (
-                      <Link
-                        key={ef.contact.id}
-                        href={`/people/${ef.contact.id}`}
-                        className="flex justify-between items-center py-2 px-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors"
-                      >
-                        <div>
-                          <span className="text-foreground font-semibold">{getDisplayName(ef.contact)}</span>
-                          <span className="text-muted-foreground"> ({ef.relation})</span>
-                        </div>
-                        <span className="text-xs text-muted-foreground">Click to view</span>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        )}
+        <RelationshipsCard
+          contact={contact}
+          contacts={contacts}
+          relationships={relationships}
+          className="mt-6"
+        />
 
         {/* Contact Info */}
         {((contact.phones && contact.phones.length > 0) || 

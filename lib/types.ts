@@ -44,3 +44,26 @@ export interface Relationship {
 
 export type Category = "Family" | "Close Friends" | "Friends" | "Colleagues" | "Acquaintances" | "Other";
 export const CATEGORIES: Category[] = ["Family", "Close Friends", "Friends", "Colleagues", "Acquaintances", "Other"]; // ordered list of categories
+
+export type OrganisationType = "Shop" | "Club" | "Employer" | "School" | "Sports Team" | "Venue" | "Other";
+export const ORGANISATION_TYPES: OrganisationType[] = ["Shop", "Club", "Employer", "School", "Sports Team", "Venue", "Other"]; // ordered list of types
+
+export interface Organisation {
+  id: string
+  name: string
+  type?: OrganisationType
+  description?: string
+  website?: string
+  address?: string
+  emails?: {
+    label: string
+    value: string
+  }[]
+  phones?: {
+    label: string
+    value: string
+  }[]
+  notes?: string
+  createdAt: string
+  updatedAt: string
+}

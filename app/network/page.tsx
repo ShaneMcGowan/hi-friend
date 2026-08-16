@@ -1,9 +1,11 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Network } from "lucide-react"
 import { RelationshipGraph } from "@/components/relationship-graph"
 import { ContactForm } from "@/components/contact-form"
+import { ParentsEditorCard } from "@/components/parents-editor-card"
+import { RelationshipsEditorCard } from "@/components/relationships-editor-card"
 import { useContactsData } from "@/hooks/use-contacts-data"
 import type { Contact } from "@/lib/types"
 import { getDisplayName } from "@/lib/utils"
@@ -21,6 +23,16 @@ export default function NetworkPage() {
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null)
   const [isFormOpen, setIsFormOpen] = useState(false)
 
+  // Parents live outside the form, so the page owns them and merges on submit.
+  // Re-seeded each time the form opens for a contact.
+  const [parentIds, setParentIds] = useState<string[]>([])
+
+  useEffect(() => {
+    if (isFormOpen && selectedContact) {
+      setParentIds(selectedContact.parentIds || [])
+    }
+  }, [isFormOpen, selectedContact?.id])
+
   const handleEditContact = (contact: Contact) => {
     setSelectedContact(contact)
     setIsFormOpen(true)
@@ -32,7 +44,7 @@ export default function NetworkPage() {
   }
 
   const handleSaveContact = (contact: Contact) => {
-    addContact(contact, selectedContact)
+    addContact({ ...contact, parentIds }, selectedContact)
     setIsFormOpen(false)
   }
 
@@ -56,17 +68,30 @@ export default function NetworkPage() {
           />
 
           {isFormOpen && selectedContact && (
-            <ContactForm
-              contact={selectedContact}
-              onSave={handleSaveContact}
-              onCancel={() => {
-                setIsFormOpen(false)
-              }}
-              allContacts={contacts}
-              relationships={relationships}
-              onRelationshipAdd={addRelationship}
-              onRelationshipRemove={removeRelationship}
-            />
+            <>
+              <ContactForm
+                contact={selectedContact}
+                onSave={handleSaveContact}
+                onCancel={() => {
+                  setIsFormOpen(false)
+                }}
+              />
+
+              <ParentsEditorCard
+                contactId={selectedContact.id}
+                value={parentIds}
+                onChange={setParentIds}
+                allContacts={contacts}
+              />
+
+              <RelationshipsEditorCard
+                contact={selectedContact}
+                allContacts={contacts}
+                relationships={relationships}
+                onAdd={addRelationship}
+                onRemove={removeRelationship}
+              />
+            </>
           )}
 
           {selectedContact && !isFormOpen && (

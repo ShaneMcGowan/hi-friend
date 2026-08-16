@@ -3,15 +3,17 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useRef, useCallback, type ChangeEvent } from "react"
-import { Users, Network, Bell, LayoutDashboard, PanelLeftClose, PanelLeft, Download, Upload } from "lucide-react"
+import { Users, Network, Bell, LayoutDashboard, Building2, PanelLeftClose, PanelLeft, Download, Upload } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useSidebar } from "./sidebar-context"
 import { useContactsData } from "@/hooks/use-contacts-data"
-import type { Contact, Relationship } from "@/lib/types"
+import { useOrganisationsData } from "@/hooks/use-organisations-data"
+import type { Contact, Organisation, Relationship } from "@/lib/types"
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
   { href: "/people", label: "People", icon: Users },
+  { href: "/organisations", label: "Organisations", icon: Building2 },
   { href: "/network", label: "Network", icon: Network },
   { href: "/reminders", label: "Reminders", icon: Bell },
 ]
@@ -20,6 +22,7 @@ export function Sidebar() {
   const pathname = usePathname()
   const { isExpanded, toggle } = useSidebar()
   const { contacts, relationships, importData } = useContactsData()
+  const { organisations, importOrganisations } = useOrganisationsData()
   const jsonInputRef = useRef<HTMLInputElement>(null)
 
   const handleExport = useCallback(() => {
@@ -27,10 +30,12 @@ export function Sidebar() {
     // This prevents stale data issues when the component hasn't re-rendered
     const savedContacts = localStorage.getItem("crm-contacts")
     const savedRelationships = localStorage.getItem("crm-relationships")
-    
+    const savedOrganisations = localStorage.getItem("crm-organisations")
+
     let currentContacts: Contact[] = []
     let currentRelationships: Relationship[] = []
-    
+    let currentOrganisations: Organisation[] = []
+
     if (savedContacts) {
       try {
         const parsed = JSON.parse(savedContacts)
@@ -57,10 +62,25 @@ export function Sidebar() {
       // Fallback to hook state if localStorage is empty
       currentRelationships = relationships
     }
-    
+
+    if (savedOrganisations) {
+      try {
+        const parsed = JSON.parse(savedOrganisations)
+        currentOrganisations = Array.isArray(parsed) ? parsed : []
+      } catch (e) {
+        console.error("Failed to parse organisations for export:", e)
+        // Fallback to hook state if localStorage parse fails
+        currentOrganisations = organisations
+      }
+    } else {
+      // Fallback to hook state if localStorage is empty
+      currentOrganisations = organisations
+    }
+
     const exportData = {
       contacts: currentContacts,
       relationships: currentRelationships,
+      organisations: currentOrganisations,
       exportedAt: new Date().toISOString(),
     }
     const dataStr = JSON.stringify(exportData, null, 2)
@@ -73,7 +93,7 @@ export function Sidebar() {
     link.click()
     document.body.removeChild(link)
     URL.revokeObjectURL(url)
-  }, [contacts, relationships])
+  }, [contacts, relationships, organisations])
 
   const handleJsonImport = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -91,6 +111,10 @@ export function Sidebar() {
         } else if (imported.contacts && Array.isArray(imported.contacts)) {
           // New format: object with contacts and relationships
           importData(imported.contacts, imported.relationships || [])
+          // Older exports have no organisations key — leave existing ones untouched
+          if (Array.isArray(imported.organisations)) {
+            importOrganisations(imported.organisations)
+          }
           alert("Contacts and relationships imported successfully!")
         } else {
           alert("Invalid file format. Please export from this app.")

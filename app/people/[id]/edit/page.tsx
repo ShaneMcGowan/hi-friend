@@ -1,9 +1,12 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import { ContactForm } from "@/components/contact-form"
+import { ParentsEditorCard } from "@/components/parents-editor-card"
+import { RelationshipsEditorCard } from "@/components/relationships-editor-card"
 import { useContactsData } from "@/hooks/use-contacts-data"
 import type { Contact } from "@/lib/types"
 import { getDisplayName } from "@/lib/utils"
@@ -23,8 +26,18 @@ export default function EditPersonPage() {
 
   const contact = contacts.find((c) => c.id === id)
 
+  // Parents live outside the form, so the page owns them and merges on submit.
+  // Seeded once the contact resolves from localStorage.
+  const [parentIds, setParentIds] = useState<string[]>([])
+
+  useEffect(() => {
+    if (contact) {
+      setParentIds(contact.parentIds || [])
+    }
+  }, [contact?.id])
+
   const handleSave = (updatedContact: Contact) => {
-    addContact(updatedContact, contact)
+    addContact({ ...updatedContact, parentIds }, contact)
     router.push(`/people/${id}`)
   }
 
@@ -80,14 +93,23 @@ export default function EditPersonPage() {
           </div>
         </div>
 
-        <ContactForm
+        <ContactForm contact={contact} onSave={handleSave} onCancel={handleCancel} />
+
+        <ParentsEditorCard
+          contactId={contact.id}
+          value={parentIds}
+          onChange={setParentIds}
+          allContacts={contacts}
+          className="mt-6"
+        />
+
+        <RelationshipsEditorCard
           contact={contact}
-          onSave={handleSave}
-          onCancel={handleCancel}
           allContacts={contacts}
           relationships={relationships}
-          onRelationshipAdd={addRelationship}
-          onRelationshipRemove={removeRelationship}
+          onAdd={addRelationship}
+          onRemove={removeRelationship}
+          className="mt-6"
         />
       </main>
     </div>

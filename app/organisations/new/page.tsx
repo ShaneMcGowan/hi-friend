@@ -3,21 +3,21 @@
 import { useRouter } from "next/navigation"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
-import { ContactForm } from "@/components/contact-form"
-import { useContactsData } from "@/hooks/use-contacts-data"
-import type { Contact } from "@/lib/types"
+import { OrganisationForm } from "@/components/organisation-form"
+import { useOrganisationsData } from "@/hooks/use-organisations-data"
+import type { Organisation } from "@/lib/types"
 
-export default function NewContactPage() {
+export default function NewOrganisationPage() {
   const router = useRouter()
-  const { addContact } = useContactsData()
+  const { addOrganisation } = useOrganisationsData()
 
-  const handleSave = (contact: Contact) => {
-    addContact(contact, null)
-    router.push(`/people/${contact.id}`)
+  const handleSave = (organisation: Organisation) => {
+    addOrganisation(organisation, null)
+    router.push(`/organisations/${organisation.id}`)
   }
 
   const handleCancel = () => {
-    router.push("/people")
+    router.push("/organisations")
   }
 
   return (
@@ -25,22 +25,22 @@ export default function NewContactPage() {
       <main className="max-w-4xl mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-6">
           <Link
-            href="/people"
+            href="/organisations"
             className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back to People
+            Back to Organisations
           </Link>
           <button
             type="submit"
-            form="contact-form"
+            form="organisation-form"
             className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
           >
-            Create Contact
+            Create Organisation
           </button>
         </div>
 
-        <ContactForm contact={null} onSave={handleSave} onCancel={handleCancel} />
+        <OrganisationForm organisation={null} onSave={handleSave} onCancel={handleCancel} />
       </main>
     </div>
   )

@@ -3,21 +3,30 @@
 import type React from "react"
 
 import { useRef } from "react"
-import type { Contact, Relationship } from "@/lib/types"
+import type { Contact, Organisation, Relationship } from "@/lib/types"
 
 interface ExportImportProps {
   contacts: Contact[]
   relationships?: Relationship[]
+  organisations?: Organisation[]
   onImport: (contacts: Contact[], relationships?: Relationship[]) => void
+  onImportOrganisations?: (organisations: Organisation[]) => void
 }
 
-export function ExportImport({ contacts, relationships = [], onImport }: ExportImportProps) {
+export function ExportImport({
+  contacts,
+  relationships = [],
+  organisations = [],
+  onImport,
+  onImportOrganisations,
+}: ExportImportProps) {
   const jsonInputRef = useRef<HTMLInputElement>(null)
 
   const handleExport = () => {
     const exportData = {
       contacts,
       relationships,
+      organisations,
       exportedAt: new Date().toISOString(),
     }
     const dataStr = JSON.stringify(exportData, null, 2)
@@ -48,6 +57,10 @@ export function ExportImport({ contacts, relationships = [], onImport }: ExportI
         } else if (imported.contacts && Array.isArray(imported.contacts)) {
           // New format: object with contacts and relationships
           onImport(imported.contacts, imported.relationships || [])
+          // Older exports have no organisations key — leave existing ones untouched
+          if (Array.isArray(imported.organisations)) {
+            onImportOrganisations?.(imported.organisations)
+          }
           alert("Contacts and relationships imported successfully!")
         } else {
           alert("Invalid file format. Please export from this app.")
