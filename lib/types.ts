@@ -22,6 +22,7 @@ export interface Contact {
   isDeceased?: boolean
   deathDate?: string
   parentIds?: string[] // IDs of parent contacts (max 2)
+  organisationIds?: string[] // IDs of organisations this contact belongs to
   interests?: string[]
   importantDates?: {
     label: string
@@ -45,8 +46,8 @@ export interface Relationship {
 export type Category = "Family" | "Close Friends" | "Friends" | "Colleagues" | "Acquaintances" | "Other";
 export const CATEGORIES: Category[] = ["Family", "Close Friends", "Friends", "Colleagues", "Acquaintances", "Other"]; // ordered list of categories
 
-export type OrganisationType = "Shop" | "Club" | "Employer" | "School" | "Sports Team" | "Venue" | "Other";
-export const ORGANISATION_TYPES: OrganisationType[] = ["Shop", "Club", "Employer", "School", "Sports Team", "Venue", "Other"]; // ordered list of types
+export type OrganisationType = "Club" | "Community" | "School" | "Sports Team" | "Venue" | "Other";
+export const ORGANISATION_TYPES: OrganisationType[] = ["Club", "Community", "School", "Sports Team", "Venue", "Other"]; // ordered list of types
 
 export interface Organisation {
   id: string

@@ -7,7 +7,9 @@ import Link from "next/link"
 import { ContactForm } from "@/components/contact-form"
 import { ParentsEditorCard } from "@/components/parents-editor-card"
 import { RelationshipsEditorCard } from "@/components/relationships-editor-card"
+import { OrganisationsEditorCard } from "@/components/organisations-editor-card"
 import { useContactsData } from "@/hooks/use-contacts-data"
+import { useOrganisationsData } from "@/hooks/use-organisations-data"
 import type { Contact } from "@/lib/types"
 import { getDisplayName } from "@/lib/utils"
 
@@ -24,20 +26,24 @@ export default function EditPersonPage() {
     removeRelationship,
   } = useContactsData()
 
+  const { organisations } = useOrganisationsData()
+
   const contact = contacts.find((c) => c.id === id)
 
-  // Parents live outside the form, so the page owns them and merges on submit.
-  // Seeded once the contact resolves from localStorage.
+  // Parents and organisations live outside the form, so the page owns them and
+  // merges on submit. Seeded once the contact resolves from localStorage.
   const [parentIds, setParentIds] = useState<string[]>([])
+  const [organisationIds, setOrganisationIds] = useState<string[]>([])
 
   useEffect(() => {
     if (contact) {
       setParentIds(contact.parentIds || [])
+      setOrganisationIds(contact.organisationIds || [])
     }
   }, [contact?.id])
 
   const handleSave = (updatedContact: Contact) => {
-    addContact({ ...updatedContact, parentIds }, contact)
+    addContact({ ...updatedContact, parentIds, organisationIds }, contact)
     router.push(`/people/${id}`)
   }
 
@@ -100,6 +106,13 @@ export default function EditPersonPage() {
           value={parentIds}
           onChange={setParentIds}
           allContacts={contacts}
+          className="mt-6"
+        />
+
+        <OrganisationsEditorCard
+          value={organisationIds}
+          onChange={setOrganisationIds}
+          allOrganisations={organisations}
           className="mt-6"
         />
 

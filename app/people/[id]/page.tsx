@@ -7,6 +7,8 @@ import { useContactsData } from "@/hooks/use-contacts-data"
 import { getDisplayName } from "@/lib/utils"
 import { FamilyCard } from "@/components/family-card"
 import { RelationshipsCard } from "@/components/relationships-card"
+import { OrganisationsCard } from "@/components/organisations-card"
+import { useOrganisationsData } from "@/hooks/use-organisations-data"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -35,6 +37,8 @@ export default function PersonPage() {
     relationships,
     deleteContact,
   } = useContactsData()
+
+  const { organisations } = useOrganisationsData()
 
   const contact = contacts.find((c) => c.id === id)
 
@@ -237,6 +241,8 @@ export default function PersonPage() {
         </div>
 
         <FamilyCard contact={contact} contacts={contacts} className="mt-6" />
+
+        <OrganisationsCard contact={contact} organisations={organisations} className="mt-6" />
 
         <RelationshipsCard
           contact={contact}

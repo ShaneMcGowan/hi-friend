@@ -13,7 +13,7 @@ import type { Contact, Organisation, Relationship } from "@/lib/types"
 const navItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
   { href: "/people", label: "People", icon: Users },
-  { href: "/organisations", label: "Organisations", icon: Building2 },
+  { href: "/organisations", label: "Organisations / Groups", icon: Building2 },
   { href: "/network", label: "Network", icon: Network },
   { href: "/reminders", label: "Reminders", icon: Bell },
 ]
