@@ -68,3 +68,26 @@ export interface Organisation {
   createdAt: string
   updatedAt: string
 }
+
+export type CollegeType = "University" | "College" | "Institute of Technology" | "Secondary School" | "Primary School" | "Other";
+export const COLLEGE_TYPES: CollegeType[] = ["University", "College", "Institute of Technology", "Secondary School", "Primary School", "Other"]; // ordered list of types
+
+export interface College {
+  id: string
+  name: string
+  type?: CollegeType
+  description?: string
+  website?: string
+  address?: string
+  emails?: {
+    label: string
+    value: string
+  }[]
+  phones?: {
+    label: string
+    value: string
+  }[]
+  notes?: string
+  createdAt: string
+  updatedAt: string
+}

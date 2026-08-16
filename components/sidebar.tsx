@@ -3,17 +3,19 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useRef, useCallback, type ChangeEvent } from "react"
-import { Users, Network, Bell, LayoutDashboard, Building2, PanelLeftClose, PanelLeft, Download, Upload } from "lucide-react"
+import { Users, Network, Bell, LayoutDashboard, Building2, GraduationCap, PanelLeftClose, PanelLeft, Download, Upload } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useSidebar } from "./sidebar-context"
 import { useContactsData } from "@/hooks/use-contacts-data"
 import { useOrganisationsData } from "@/hooks/use-organisations-data"
-import type { Contact, Organisation, Relationship } from "@/lib/types"
+import { useCollegesData } from "@/hooks/use-colleges-data"
+import type { College, Contact, Organisation, Relationship } from "@/lib/types"
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
   { href: "/people", label: "People", icon: Users },
   { href: "/organisations", label: "Organisations / Groups", icon: Building2 },
+  { href: "/colleges", label: "Colleges", icon: GraduationCap },
   { href: "/network", label: "Network", icon: Network },
   { href: "/reminders", label: "Reminders", icon: Bell },
 ]
@@ -23,6 +25,7 @@ export function Sidebar() {
   const { isExpanded, toggle } = useSidebar()
   const { contacts, relationships, importData } = useContactsData()
   const { organisations, importOrganisations } = useOrganisationsData()
+  const { colleges, importColleges } = useCollegesData()
   const jsonInputRef = useRef<HTMLInputElement>(null)
 
   const handleExport = useCallback(() => {
@@ -31,10 +34,12 @@ export function Sidebar() {
     const savedContacts = localStorage.getItem("crm-contacts")
     const savedRelationships = localStorage.getItem("crm-relationships")
     const savedOrganisations = localStorage.getItem("crm-organisations")
+    const savedColleges = localStorage.getItem("crm-colleges")
 
     let currentContacts: Contact[] = []
     let currentRelationships: Relationship[] = []
     let currentOrganisations: Organisation[] = []
+    let currentColleges: College[] = []
 
     if (savedContacts) {
       try {
@@ -77,10 +82,25 @@ export function Sidebar() {
       currentOrganisations = organisations
     }
 
+    if (savedColleges) {
+      try {
+        const parsed = JSON.parse(savedColleges)
+        currentColleges = Array.isArray(parsed) ? parsed : []
+      } catch (e) {
+        console.error("Failed to parse colleges for export:", e)
+        // Fallback to hook state if localStorage parse fails
+        currentColleges = colleges
+      }
+    } else {
+      // Fallback to hook state if localStorage is empty
+      currentColleges = colleges
+    }
+
     const exportData = {
       contacts: currentContacts,
       relationships: currentRelationships,
       organisations: currentOrganisations,
+      colleges: currentColleges,
       exportedAt: new Date().toISOString(),
     }
     const dataStr = JSON.stringify(exportData, null, 2)
@@ -93,7 +113,7 @@ export function Sidebar() {
     link.click()
     document.body.removeChild(link)
     URL.revokeObjectURL(url)
-  }, [contacts, relationships, organisations])
+  }, [contacts, relationships, organisations, colleges])
 
   const handleJsonImport = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -114,6 +134,10 @@ export function Sidebar() {
           // Older exports have no organisations key — leave existing ones untouched
           if (Array.isArray(imported.organisations)) {
             importOrganisations(imported.organisations)
+          }
+          // Older exports have no colleges key — leave existing ones untouched
+          if (Array.isArray(imported.colleges)) {
+            importColleges(imported.colleges)
           }
           alert("Contacts and relationships imported successfully!")
         } else {

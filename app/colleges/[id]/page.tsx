@@ -1,13 +1,9 @@
 "use client"
 
-import { useMemo } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { ArrowLeft, Pencil, Trash2 } from "lucide-react"
 import Link from "next/link"
-import { useOrganisationsData } from "@/hooks/use-organisations-data"
-import { useContactsData } from "@/hooks/use-contacts-data"
-import { PersonLinkRow } from "@/components/person-link-row"
-import { getDisplayName } from "@/lib/utils"
+import { useCollegesData } from "@/hooks/use-colleges-data"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,28 +16,19 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 
-export default function OrganisationPage() {
+export default function CollegePage() {
   const params = useParams()
   const router = useRouter()
   const id = params.id as string
 
-  const { organisations, isLoaded, deleteOrganisation } = useOrganisationsData()
-  const { contacts } = useContactsData()
+  const { colleges, isLoaded, deleteCollege } = useCollegesData()
 
-  const organisation = organisations.find((o) => o.id === id)
-
-  const members = useMemo(
-    () =>
-      contacts
-        .filter((c) => c.organisationIds?.includes(id))
-        .sort((a, b) => getDisplayName(a).localeCompare(getDisplayName(b))),
-    [contacts, id]
-  )
+  const college = colleges.find((c) => c.id === id)
 
   const handleDelete = () => {
-    if (organisation) {
-      deleteOrganisation(organisation.id)
-      router.push("/organisations")
+    if (college) {
+      deleteCollege(college.id)
+      router.push("/colleges")
     }
   }
 
@@ -56,18 +43,18 @@ export default function OrganisationPage() {
     )
   }
 
-  if (!organisation) {
+  if (!college) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background to-secondary">
         <main className="max-w-4xl mx-auto px-4 py-8">
           <div className="bg-white rounded-xl border border-border/40 p-6 shadow-sm text-center">
-            <p className="text-muted-foreground">Organisation not found</p>
+            <p className="text-muted-foreground">College not found</p>
             <Link
-              href="/organisations"
+              href="/colleges"
               className="inline-flex items-center gap-2 mt-4 text-primary hover:underline"
             >
               <ArrowLeft className="w-4 h-4" />
-              Back to Organisations
+              Back to Colleges
             </Link>
           </div>
         </main>
@@ -75,24 +62,24 @@ export default function OrganisationPage() {
     )
   }
 
-  const websiteHref = organisation.website?.startsWith("http")
-    ? organisation.website
-    : `https://${organisation.website}`
+  const websiteHref = college.website?.startsWith("http")
+    ? college.website
+    : `https://${college.website}`
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-secondary">
       <main className="max-w-4xl mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-6">
           <Link
-            href="/organisations"
+            href="/colleges"
             className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back to Organisations
+            Back to Colleges
           </Link>
           <div className="flex gap-2">
             <Link
-              href={`/organisations/${organisation.id}/edit`}
+              href={`/colleges/${college.id}/edit`}
               className="inline-flex items-center gap-2 px-3 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 transition-colors text-sm"
             >
               <Pencil className="w-4 h-4" />
@@ -107,9 +94,9 @@ export default function OrganisationPage() {
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Delete Organisation</AlertDialogTitle>
+                  <AlertDialogTitle>Delete College</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Are you sure you want to delete <strong>{organisation.name || "this organisation"}</strong>? This action cannot be undone.
+                    Are you sure you want to delete <strong>{college.name || "this college"}</strong>? This action cannot be undone.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -128,21 +115,21 @@ export default function OrganisationPage() {
 
         <div className="bg-white rounded-xl border border-border/40 p-6 shadow-sm">
           <div className="mb-6">
-            <h1 className="text-2xl font-bold text-foreground">{organisation.name || "Untitled Organisation"}</h1>
-            {organisation.type && (
-              <p className="text-sm text-muted-foreground mt-1">{organisation.type}</p>
+            <h1 className="text-2xl font-bold text-foreground">{college.name || "Untitled College"}</h1>
+            {college.type && (
+              <p className="text-sm text-muted-foreground mt-1">{college.type}</p>
             )}
           </div>
 
           <div className="space-y-6">
-            {organisation.description && (
+            {college.description && (
               <div>
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Description</p>
-                <p className="text-foreground">{organisation.description}</p>
+                <p className="text-foreground">{college.description}</p>
               </div>
             )}
 
-            {organisation.website && (
+            {college.website && (
               <div>
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Website</p>
                 <a
@@ -151,23 +138,23 @@ export default function OrganisationPage() {
                   rel="noreferrer"
                   className="text-primary hover:underline break-all"
                 >
-                  {organisation.website}
+                  {college.website}
                 </a>
               </div>
             )}
 
-            {organisation.address && (
+            {college.address && (
               <div>
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Address</p>
-                <p className="text-foreground whitespace-pre-line">{organisation.address}</p>
+                <p className="text-foreground whitespace-pre-line">{college.address}</p>
               </div>
             )}
 
-            {organisation.emails && organisation.emails.length > 0 && (
+            {college.emails && college.emails.length > 0 && (
               <div>
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Email Addresses</p>
                 <div className="space-y-2">
-                  {organisation.emails.map((email, idx) => (
+                  {college.emails.map((email, idx) => (
                     <div key={idx} className="flex justify-between items-center py-2 px-3 bg-muted rounded-lg">
                       <span className="text-foreground">
                         <span className="font-semibold">{email.label}:</span> {email.value}
@@ -178,11 +165,11 @@ export default function OrganisationPage() {
               </div>
             )}
 
-            {organisation.phones && organisation.phones.length > 0 && (
+            {college.phones && college.phones.length > 0 && (
               <div>
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Phone Numbers</p>
                 <div className="space-y-2">
-                  {organisation.phones.map((phone, idx) => (
+                  {college.phones.map((phone, idx) => (
                     <div key={idx} className="flex justify-between items-center py-2 px-3 bg-muted rounded-lg">
                       <span className="text-foreground">
                         <span className="font-semibold">{phone.label}:</span> {phone.value}
@@ -193,34 +180,12 @@ export default function OrganisationPage() {
               </div>
             )}
 
-            {organisation.notes && (
+            {college.notes && (
               <div>
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Notes</p>
-                <p className="text-foreground whitespace-pre-line">{organisation.notes}</p>
+                <p className="text-foreground whitespace-pre-line">{college.notes}</p>
               </div>
             )}
-
-            <div>
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
-                People {members.length > 0 && `(${members.length})`}
-              </p>
-              {members.length === 0 ? (
-                <p className="text-muted-foreground text-sm">
-                  No one is linked to this organisation yet. Add it to someone from their edit page.
-                </p>
-              ) : (
-                <div className="space-y-2">
-                  {members.map((member) => (
-                    <PersonLinkRow
-                      key={member.id}
-                      id={member.id}
-                      name={getDisplayName(member)}
-                      detail={member.category}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
           </div>
         </div>
       </main>
