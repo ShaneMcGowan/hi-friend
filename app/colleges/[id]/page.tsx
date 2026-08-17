@@ -1,9 +1,13 @@
 "use client"
 
+import { useMemo } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { ArrowLeft, Pencil, Trash2 } from "lucide-react"
 import Link from "next/link"
 import { useCollegesData } from "@/hooks/use-colleges-data"
+import { useContactsData } from "@/hooks/use-contacts-data"
+import { EducationGantt } from "@/components/education-gantt"
+import { getDisplayName } from "@/lib/utils"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,8 +26,30 @@ export default function CollegePage() {
   const id = params.id as string
 
   const { colleges, isLoaded, deleteCollege } = useCollegesData()
+  const { contacts } = useContactsData()
 
   const college = colleges.find((c) => c.id === id)
+
+  // One row per person, with all their stints here listed inside it.
+  const students = useMemo(
+    () =>
+      contacts
+        .map((contact) => ({
+          contact,
+          entries: (contact.education || [])
+            .filter((entry) => entry.collegeId === id)
+            .sort((a, b) => Number(a.startYear || 0) - Number(b.startYear || 0)),
+        }))
+        .filter((student) => student.entries.length > 0)
+        .sort((a, b) => getDisplayName(a.contact).localeCompare(getDisplayName(b.contact))),
+    [contacts, id]
+  )
+
+  // The chart wants them flat — it does its own grouping into one row per person.
+  const ganttRows = useMemo(
+    () => students.flatMap(({ contact, entries }) => entries.map((entry) => ({ contact, entry }))),
+    [students]
+  )
 
   const handleDelete = () => {
     if (college) {
@@ -186,6 +212,53 @@ export default function CollegePage() {
                 <p className="text-foreground whitespace-pre-line">{college.notes}</p>
               </div>
             )}
+
+            {ganttRows.length > 0 && <EducationGantt rows={ganttRows} />}
+
+            <div>
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                People {students.length > 0 && `(${students.length})`}
+              </p>
+              {students.length === 0 ? (
+                <p className="text-muted-foreground text-sm">
+                  No one has studied here yet. Add this college to someone&apos;s education from their edit page.
+                </p>
+              ) : (
+                <div className="space-y-2">
+                  {students.map(({ contact, entries }) => (
+                    <Link
+                      key={contact.id}
+                      href={`/people/${contact.id}`}
+                      className="block py-2 px-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors"
+                    >
+                      <span className="text-foreground font-semibold">{getDisplayName(contact)}</span>
+                      <div className="mt-1 space-y-1">
+                        {entries.map((entry) => {
+                          const years = [entry.startYear, entry.endYear].filter(Boolean).join(" – ")
+                          return (
+                            <div key={entry.id} className="flex justify-between items-center gap-3">
+                              <span className="text-sm text-muted-foreground min-w-0">
+                                {[entry.course, entry.level, years].filter(Boolean).join(" · ") ||
+                                  "No details recorded"}
+                              </span>
+                              <span
+                                className={`text-xs px-2 py-1 rounded flex-shrink-0 ${
+                                  entry.completed
+                                    ? "bg-green-100 text-green-700"
+                                    : "bg-amber-100 text-amber-700"
+                                }`}
+                              >
+                                {entry.completed ? "Completed" : "Not completed"}
+                              </span>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </main>

@@ -8,9 +8,11 @@ import { ContactForm } from "@/components/contact-form"
 import { ParentsEditorCard } from "@/components/parents-editor-card"
 import { RelationshipsEditorCard } from "@/components/relationships-editor-card"
 import { OrganisationsEditorCard } from "@/components/organisations-editor-card"
+import { EducationEditorCard } from "@/components/education-editor-card"
 import { useContactsData } from "@/hooks/use-contacts-data"
 import { useOrganisationsData } from "@/hooks/use-organisations-data"
-import type { Contact } from "@/lib/types"
+import { useCollegesData } from "@/hooks/use-colleges-data"
+import type { Contact, Education } from "@/lib/types"
 import { getDisplayName } from "@/lib/utils"
 
 export default function EditPersonPage() {
@@ -27,23 +29,31 @@ export default function EditPersonPage() {
   } = useContactsData()
 
   const { organisations } = useOrganisationsData()
+  const { colleges } = useCollegesData()
 
   const contact = contacts.find((c) => c.id === id)
 
-  // Parents and organisations live outside the form, so the page owns them and
-  // merges on submit. Seeded once the contact resolves from localStorage.
+  // Parents, organisations and education live outside the form, so the page owns
+  // them and merges on submit. Seeded once the contact resolves from localStorage.
   const [parentIds, setParentIds] = useState<string[]>([])
   const [organisationIds, setOrganisationIds] = useState<string[]>([])
+  const [education, setEducation] = useState<Education[]>([])
 
   useEffect(() => {
     if (contact) {
       setParentIds(contact.parentIds || [])
       setOrganisationIds(contact.organisationIds || [])
+      setEducation(contact.education || [])
     }
   }, [contact?.id])
 
   const handleSave = (updatedContact: Contact) => {
-    addContact({ ...updatedContact, parentIds, organisationIds }, contact)
+    // Drop entries where no college was ever picked — they carry no information.
+    const cleanedEducation = education.filter((e) => e.collegeId !== "")
+    addContact(
+      { ...updatedContact, parentIds, organisationIds, education: cleanedEducation },
+      contact
+    )
     router.push(`/people/${id}`)
   }
 
@@ -113,6 +123,13 @@ export default function EditPersonPage() {
           value={organisationIds}
           onChange={setOrganisationIds}
           allOrganisations={organisations}
+          className="mt-6"
+        />
+
+        <EducationEditorCard
+          value={education}
+          onChange={setEducation}
+          allColleges={colleges}
           className="mt-6"
         />
 

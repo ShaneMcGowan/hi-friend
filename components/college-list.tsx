@@ -15,9 +15,7 @@ export function CollegeList({
   onSearchChange,
 }: CollegeListProps) {
   const typeColors: Record<string, string> = {
-    University: "bg-blue-100 text-blue-700",
     College: "bg-teal-100 text-teal-700",
-    "Institute of Technology": "bg-cyan-100 text-cyan-700",
     "Secondary School": "bg-amber-100 text-amber-700",
     "Primary School": "bg-lime-100 text-lime-700",
     Other: "bg-gray-100 text-gray-700",

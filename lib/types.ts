@@ -23,6 +23,7 @@ export interface Contact {
   deathDate?: string
   parentIds?: string[] // IDs of parent contacts (max 2)
   organisationIds?: string[] // IDs of organisations this contact belongs to
+  education?: Education[] // where this contact studied, most recent first is not guaranteed
   interests?: string[]
   importantDates?: {
     label: string
@@ -69,8 +70,37 @@ export interface Organisation {
   updatedAt: string
 }
 
-export type CollegeType = "University" | "College" | "Institute of Technology" | "Secondary School" | "Primary School" | "Other";
-export const COLLEGE_TYPES: CollegeType[] = ["University", "College", "Institute of Technology", "Secondary School", "Primary School", "Other"]; // ordered list of types
+export type CollegeType = "College" | "Secondary School" | "Primary School" | "Other";
+export const COLLEGE_TYPES: CollegeType[] = ["College", "Secondary School", "Primary School", "Other"]; // ordered list of types
+
+export type EducationLevel =
+  | "Secondary School"
+  | "Certificate"
+  | "Diploma"
+  | "Bachelor's Degree"
+  | "Master's Degree"
+  | "Doctorate"
+  | "Other";
+export const EDUCATION_LEVELS: EducationLevel[] = [
+  "Secondary School",
+  "Certificate",
+  "Diploma",
+  "Bachelor's Degree",
+  "Master's Degree",
+  "Doctorate",
+  "Other",
+]; // ordered list of levels
+
+// One stint at a college. Stored on the Contact, referencing a College by id.
+export interface Education {
+  id: string
+  collegeId: string
+  course?: string
+  level?: EducationLevel
+  startYear?: string
+  endYear?: string
+  completed?: boolean
+}
 
 export interface College {
   id: string

@@ -158,7 +158,7 @@ export function RelationshipGraph({
     const radius = Math.min(width, height) / 3
 
     // Check which node was clicked
-    contacts.forEach((contact, index) => {
+    for (const [index, contact] of contacts.entries()) {
       const angle = (index / contacts.length) * 2 * Math.PI
       const nodeX = centerX + radius * Math.cos(angle)
       const nodeY = centerY + radius * Math.sin(angle)
@@ -166,8 +166,9 @@ export function RelationshipGraph({
 
       if (distance < 35) {
         onContactClick(contact)
+        return
       }
-    })
+    }
   }
 
   return (
@@ -179,7 +180,7 @@ export function RelationshipGraph({
         className="w-full border border-border rounded-lg cursor-pointer"
         style={{ height: "500px", background: "#fafafa" }}
       />
-      <p className="text-xs text-muted-foreground mt-3">Click on any person to view their details</p>
+      <p className="text-xs text-muted-foreground mt-3">Click on any person to open their profile</p>
     </div>
   )
 }

@@ -8,7 +8,9 @@ import { getDisplayName } from "@/lib/utils"
 import { FamilyCard } from "@/components/family-card"
 import { RelationshipsCard } from "@/components/relationships-card"
 import { OrganisationsCard } from "@/components/organisations-card"
+import { EducationCard } from "@/components/education-card"
 import { useOrganisationsData } from "@/hooks/use-organisations-data"
+import { useCollegesData } from "@/hooks/use-colleges-data"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -39,6 +41,7 @@ export default function PersonPage() {
   } = useContactsData()
 
   const { organisations } = useOrganisationsData()
+  const { colleges } = useCollegesData()
 
   const contact = contacts.find((c) => c.id === id)
 
@@ -243,6 +246,8 @@ export default function PersonPage() {
         <FamilyCard contact={contact} contacts={contacts} className="mt-6" />
 
         <OrganisationsCard contact={contact} organisations={organisations} className="mt-6" />
+
+        <EducationCard contact={contact} colleges={colleges} className="mt-6" />
 
         <RelationshipsCard
           contact={contact}
